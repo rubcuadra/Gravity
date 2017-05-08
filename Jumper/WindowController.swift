@@ -17,6 +17,7 @@ var up: Bool = false //trigger to wait until corner reached
 var down: Bool = false //ditto
 var horizontalWait: Bool = false
 var horizontalMove = true
+var gravity = true //True es normal, en el suelo
 var counter: Int = 15 //To acount for awkwardness in controls
 
 struct gamePhysics
@@ -58,12 +59,13 @@ class WindowController: NSWindowController
     
     @IBOutlet public weak var mainView: NSWindow!
     
-    override func keyDown(with event: NSEvent) {
+    override func keyDown(with event: NSEvent)
+    {
+        print(event.keyCode)
         switch event.keyCode
         {
             //Control Pac-Man movement
-            case 123:
-                //left
+            case 123: //left
                 if horizontalMove
                 {
                     up = false
@@ -72,17 +74,16 @@ class WindowController: NSWindowController
                 direction = false
                 horizontalWait = true
                 counter = 15
-            case 124:
-                //right
-                if horizontalMove {
+            case 124: //right
+                if horizontalMove
+                {
                     up = false
                     down = false
                 }
                 direction = true
                 horizontalWait = true
                 counter = 15
-            case 125:
-                //down
+            case 125: //down
                 down = true
                 up = false
                 counter = 15
@@ -91,6 +92,10 @@ class WindowController: NSWindowController
                 up = true
                 down = false
                 counter = 15
+            case 49:    //spaceBar
+                gravity = !gravity
+                break
+            
             default:
                 break
             }
@@ -98,23 +103,23 @@ class WindowController: NSWindowController
 }
 
 @available(OSX 10.12.2, *)
-extension WindowController: NSTouchBarDelegate {
-    
+extension WindowController: NSTouchBarDelegate
+{
     func touchBar(_ touchBar: NSTouchBar, makeItemForIdentifier identifier: NSTouchBarItemIdentifier) -> NSTouchBarItem? {
         
         switch identifier
         {
-        case NSTouchBarItemIdentifier.customView:
-            let gameView = SKView()
-            let scene = GameScene()
-            let item = NSCustomTouchBarItem(identifier: identifier)
-            item.view = gameView
-            gameView.presentScene(scene)
-            
-            return item
-            
-        default:
-            return nil
+            case NSTouchBarItemIdentifier.customView:
+                let gameView = SKView()
+                let scene = GameScene()
+                let item = NSCustomTouchBarItem(identifier: identifier)
+                item.view = gameView
+                gameView.presentScene(scene)
+                
+                return item
+                
+            default:
+                return nil
         }
     }
 }
@@ -185,7 +190,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         barArray.append(SKSpriteNode(imageNamed: "bbarL"))
         barArray.append(SKSpriteNode(imageNamed: "barR"))
         barArray.append(SKSpriteNode(imageNamed: "bbarR"))
-        for b in barArray {
+        for b in barArray
+        {
             b.xScale = 1
             b.yScale = 1
         }
@@ -439,15 +445,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     }
     
     //Movement
-    func checkVertical() {
-        if PacMan.position.x < 214.5 && PacMan.position.x > 213.5 { //to account for decimals
-            if up {
+    func checkVertical()
+    {
+        if PacMan.position.x < 214.5 && PacMan.position.x > 213.5
+        { //to account for decimals
+            if up
+            {
                 PacMan.position.x = 214
                 PacMan.xScale = 1
                 PacMan.zRotation = CGFloat(0.5 * M_PI)
                 horizontalMove = false
                 PacMan.position.y += 1
-            } else if down {
+            } else if down
+            {
                 PacMan.xScale = 1
                 PacMan.position.x = 214
                 PacMan.zRotation = CGFloat(1.5 * M_PI)
@@ -471,10 +481,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         }
     }
     
-    func checkHorizontal() {
-        if !horizontalMove {
-            if PacMan.position.y < 16 && PacMan.position.y > 14 {
-                if horizontalWait {
+    func checkHorizontal()
+    {
+        if !horizontalMove
+        {
+            if PacMan.position.y < 16 && PacMan.position.y > 14
+            {
+                if horizontalWait
+                {
                     horizontalMove = true
                     PacMan.position.y = 15
                     PacMan.zRotation = 0
@@ -549,15 +563,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         {
             sprite.position.x = 0 //Start
         }
-        if sprite.position.y < 0 {
-            if sprite.position.x > 213.5 && sprite.position.x < 214.5 {
+        if sprite.position.y < 0
+        {
+            if sprite.position.x > 213.5 && sprite.position.x < 214.5
+            {
                 sprite.position.x = 642
             } else {
                 sprite.position.x = 214
             }
             sprite.position.y = 30
-        } else if sprite.position.y > 30 {
-            if sprite.position.x > 213.5 && sprite.position.x < 214.5 {
+        } else if sprite.position.y > 30
+        {
+            if sprite.position.x > 213.5 && sprite.position.x < 214.5
+            {
                 sprite.position.x = 642
             } else {
                 sprite.position.x = 214
@@ -618,7 +636,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
 //        miscAudio.play()
         //createSprite(texture: BlinkyFrames, height: 14, width: 14, xPos: 50, yPos: 15, node: &Blinky, catBitMask: gamePhysics.Blinky, conTestBitMask: [gamePhysics.PacMan, gamePhysics.Dot])
         PacFrames = eatFrames
-        createSprite(texture: PacFrames, height: 13, width: 13, xPos: 300, yPos: 15, node: &PacMan, catBitMask: gamePhysics.PacMan,
+        createSprite(texture: PacFrames, height: 13, width: 13, xPos: 50, yPos: 15, node: &PacMan, catBitMask: gamePhysics.PacMan,
                      conTestBitMask:[])//[gamePhysics.Dot, gamePhysics.Blinky])
         PacMan.texture = PacFrames[2]
         //Blinky.physicsBody?.collisionBitMask = 0
@@ -758,20 +776,47 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if horizontalMove
         {
             horizontalWait = false
+           
+            if gravity //Gravedad normal
+            {
+                if PacMan.yScale < 0
+                {
+                    PacMan.yScale *= -1
+                }
+                else
+                {
+                    
+                }
+            }
+            else    //Gravedad Rara
+            {
+                if PacMan.yScale < 0
+                {
+                    
+                }
+                else
+                {
+                    PacMan.yScale *= -1
+                }
+            }
+            
             if direction
             {
                 if PacMan.xScale < 0
                 {
                     PacMan.xScale = PacMan.xScale * -1;
                 }
-                PacMan.position.x += 1
-            } else {
-                if PacMan.xScale > 0 {
+                //PacMan.position.x += 1
+            } else
+            {
+                if PacMan.xScale > 0
+                {
                     PacMan.xScale = PacMan.xScale * -1;
                 }
-                PacMan.position.x -= 1
+                //PacMan.position.x -= 1
             }
         }
+        
         checkVertical()
         checkHorizontal()
         if counter > 0
@@ -810,7 +855,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                         //self.addChild(self.Blinky)
                         //self.Blinky.position.x = 50
                         //self.Blinky.position.y = 15
-                        self.PacMan.position.x = 300
+                        
+                        self.PacMan.position.x = 50
                         self.PacMan.position.y = 15
                         
                         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) //Start Game
