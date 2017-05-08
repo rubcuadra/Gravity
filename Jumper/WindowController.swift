@@ -20,6 +20,10 @@ var horizontalMove = true
 var gravity = true //True es normal, en el suelo
 var counter: Int = 15 //To acount for awkwardness in controls
 
+var initial_pos = CGFloat(50)
+var floor_pixels = CGFloat(10)
+var ceil_pixels = CGFloat(20)
+
 struct gamePhysics
 {
     static let PacMan: UInt32 = 1
@@ -200,24 +204,31 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         sArray.append(SKSpriteNode(imageNamed: "bbarLs"))
         var offsetX = 107
         var inc: Bool = false
-        for (index, item) in barArray.enumerated() {
+        for (index, item) in barArray.enumerated()
+        {
             item.name = "Bar" + "\(index)"
             item.position.x = CGFloat(offsetX)
-            if inc {
+            if inc                      //Es del techo
+            {
                 item.position.y = 2
-            } else {
+            } else                      //Suelo
+            {
                 item.position.y = 28
             }
             self.addChild(item)
-            if inc {
-                offsetX += 214
+            
+            if inc
+            {
+                offsetX += 214  //Lo que mide cada uno de ancho, se manda a llamar 1 vez cada 2 iters
             }
-            inc = !inc
+            inc = !inc          //En el array estan uno de techo, uno de suelo
         }
-        for (index, item) in sArray.enumerated() {
-            item.name = "Bar" + "\(index + 6)"
-            item.position.x = 671
-            if index == 0 {
+        for (index, item) in sArray.enumerated()
+        {
+            item.name = "Bar" + "\(index + barArray.count)" //
+            item.position.x = 671  //Son las mas pegadas a la derecha, pixeles que faltaron al parecer
+            if index == 0
+            {
                 item.position.y = 28
             } else {
                 item.position.y = 2
@@ -400,9 +411,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.addChild(PacManD)
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0) {
             self.view?.scene?.isPaused = false
-            do {
+            do
+            {
                 //try self.miscAudio = AVAudioPlayer(contentsOf: self.death as URL)
-            } catch{
+            } catch
+            {
                 print("Could not update audio - death")
             }
             //self.miscAudio.prepareToPlay()
@@ -464,8 +477,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 horizontalMove = false
                 PacMan.position.y -= 1
             }
-        } else if PacMan.position.x < 642.5 && PacMan.position.x > 641.5 {
-            if up {
+        } else if PacMan.position.x < 642.5 && PacMan.position.x > 641.5
+        {
+            if up
+            {
                 PacMan.xScale = 1
                 PacMan.position.x = 642
                 PacMan.zRotation = CGFloat(0.5 * M_PI)
@@ -490,7 +505,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 if horizontalWait
                 {
                     horizontalMove = true
-                    PacMan.position.y = 15
+                    PacMan.position.y = floor_pixels
                     PacMan.zRotation = 0
                     horizontalWait = false
                     up = false
@@ -636,7 +651,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
 //        miscAudio.play()
         //createSprite(texture: BlinkyFrames, height: 14, width: 14, xPos: 50, yPos: 15, node: &Blinky, catBitMask: gamePhysics.Blinky, conTestBitMask: [gamePhysics.PacMan, gamePhysics.Dot])
         PacFrames = eatFrames
-        createSprite(texture: PacFrames, height: 13, width: 13, xPos: 50, yPos: 15, node: &PacMan, catBitMask: gamePhysics.PacMan,
+        createSprite(texture: PacFrames, height: 13, width: 13, xPos: Int(initial_pos), yPos: Int(floor_pixels), node: &PacMan, catBitMask: gamePhysics.PacMan,
                      conTestBitMask:[])//[gamePhysics.Dot, gamePhysics.Blinky])
         PacMan.texture = PacFrames[2]
         //Blinky.physicsBody?.collisionBitMask = 0
@@ -650,6 +665,37 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             self.view?.scene?.isPaused = false
             self.playSiren()
         }
+    }
+    
+    func checkGravity() //TODO : Animate jump
+    {
+        if gravity //Gravedad normal
+        {
+            if PacMan.yScale < 0
+            {
+                PacMan.yScale *= -1              //Cambiar gravedad
+                PacMan.position.y = floor_pixels //Invertir al suelo
+                //PacMan.position.x += 5           //Avanzar 1
+            }
+            else
+            {
+                
+            }
+        }
+        else    //Gravedad Invertida
+        {
+            if PacMan.yScale < 0
+            {
+                
+            }
+            else
+            {
+                PacMan.yScale *= -1             //Cambiar gravedad
+                PacMan.position.y = ceil_pixels //Invertir al techo
+                //PacMan.position.x += 5          //Avanzar 1
+            }
+        }
+        print (PacMan.position)
     }
     
     //Update everything (calls other functions)
@@ -773,33 +819,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
 //                }
 //            }
 //        }
+        
+        checkGravity()
+        
         if horizontalMove
         {
             horizontalWait = false
            
-            if gravity //Gravedad normal
-            {
-                if PacMan.yScale < 0
-                {
-                    PacMan.yScale *= -1
-                }
-                else
-                {
-                    
-                }
-            }
-            else    //Gravedad Rara
-            {
-                if PacMan.yScale < 0
-                {
-                    
-                }
-                else
-                {
-                    PacMan.yScale *= -1
-                }
-            }
-            
             if direction
             {
                 if PacMan.xScale < 0
@@ -856,8 +882,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                         //self.Blinky.position.x = 50
                         //self.Blinky.position.y = 15
                         
-                        self.PacMan.position.x = 50
-                        self.PacMan.position.y = 15
+                        self.PacMan.position.x = initial_pos
+                        self.PacMan.position.y = floor_pixels
                         
                         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) //Start Game
                         {
