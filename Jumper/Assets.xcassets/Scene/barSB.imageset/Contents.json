@@ -1,6 +1,20 @@
 {
   "images" : [
     {
+      "resizing" : {
+        "mode" : "9-part",
+        "center" : {
+          "mode" : "tile",
+          "width" : 1,
+          "height" : 1
+        },
+        "cap-insets" : {
+          "bottom" : 2,
+          "top" : 1,
+          "right" : 8,
+          "left" : 7
+        }
+      },
       "idiom" : "universal",
       "filename" : "bar.png",
       "scale" : "1x"

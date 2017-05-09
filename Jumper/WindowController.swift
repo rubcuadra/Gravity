@@ -12,6 +12,7 @@ import SpriteKit
 import GameplayKit
 import AVFoundation
 
+
 var direction: Bool = true //true=right, false=left
 var up: Bool = false //trigger to wait until corner reached
 var down: Bool = false //ditto
@@ -117,30 +118,41 @@ extension WindowController: NSTouchBarDelegate
         
         switch identifier
         {
-        case NSTouchBarItemIdentifier.customView:
-            let gameView = SKView()
-            let scene = GameScene()
-            let item = NSCustomTouchBarItem(identifier: identifier)
-            item.view = gameView
-            gameView.presentScene(scene)
-            
-            return item
-            
-        default:
-            return nil
+            case NSTouchBarItemIdentifier.customView:
+                let gameView = SKView()
+                let scene = GameScene()
+                let item = NSCustomTouchBarItem(identifier: identifier)
+                
+                item.view = gameView
+                item.view.allowedTouchTypes = NSTouchTypeMask.direct //.insert(NSTouchTypeMask.direct)
+                //item.view.gestureRecognizers.append(NSGestureRecognizer.init())
+                //item.view.acceptsTouchEvents = true
+                gameView.presentScene(scene)
+                
+                
+                
+                return item
+                
+            default:
+                return nil
         }
     }
+    
 }
 
 class GameScene: SKScene, SKPhysicsContactDelegate
 {
+    override func touchesBegan(with event: NSEvent)
+    {
+        print("TOUCH")
+    }
+    
     //Variables
     let touchbarHeight = 60
     let touchbarWidth = 1024
     let bar_width = 16
     
     var score: Int = 0
-    //var borderArray = [SKSpriteNode]()
     
     var ceilBarArray = [SKSpriteNode]()
     var floorBarArray = [SKSpriteNode]()
@@ -149,58 +161,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var numDots = 85
     var Player: SKSpriteNode!
     var PacFrames: [SKTexture]!
-    //var Blinky: SKSpriteNode!
-    //var BlinkyFrames: [SKTexture]!
-    //var BlinkyUpFrames: [SKTexture]!
-    //var BlinkyDownFrames: [SKTexture]!
-    //var bHorizontalMove: Bool = true
-    //var bVerticalMove: Bool = true
-    //var blinkySpeed: CGFloat = 1
     var barIsWhite: Bool = false
     var level: Int = 0
     var tHold1: Bool = false
     var tHold2: Bool = false //These keep Blinky's speed from being increased more than once
     var dotNumber: Bool = true //true = 1, false = 2
     
-    
-    
-    //Creating stuff
-    //    func createDots()
-    //    {
-    //        var dotArray = [SKSpriteNode]()
-    //        for _ in 1...85
-    //        {
-    //            dotArray.append(SKSpriteNode(imageNamed: "Dot"))
-    //        }
-    //        var offsetX = 7
-    //        for (index, item) in dotArray.enumerated()
-    //        {
-    //            item.position.x = CGFloat(offsetX)
-    //            item.position.y = 15
-    //            item.name = "Dot\(index)"
-    //            item.physicsBody = SKPhysicsBody(rectangleOf: item.size)
-    //            item.physicsBody?.categoryBitMask = gamePhysics.Dot
-    //            item.physicsBody?.contactTestBitMask = gamePhysics.Player
-    //            item.physicsBody?.isDynamic = true
-    //            item.physicsBody?.affectedByGravity = false
-    //            item.physicsBody?.collisionBitMask = 0
-    //            self.addChild(item)
-    //            offsetX += 8
-    //        }
-    //        level += 1
-    //        blinkySpeed = 1
-    //        if level > 10 {
-    //            bSpeedInc()
-    //        }
-    //        if level > 15 {
-    //            bSpeedInc()
-    //        }
-    //        if level > 20 {
-    //            bSpeedInc()
-    //        }
-    //    }
-    
-
     func createBorders()
     {
         var barArray = [SKSpriteNode]()
@@ -985,7 +951,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             }
         }
         //checkOverflow(sprite: Blinky)
-        if numDots < 1  //GANAMOS
+        if false  //GANAMOS
         {
             self.view?.scene?.isPaused = true
             //sirenAudio.stop()
