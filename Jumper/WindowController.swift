@@ -150,7 +150,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     //Variables
     let touchbarHeight = 60
     let touchbarWidth = 1024
-    let bar_width = 16
     
     var score: Int = 0
     
@@ -161,6 +160,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var numDots = 85
     var Player: SKSpriteNode!
     var PacFrames: [SKTexture]!
+    
+    var canAddVoid = true  //Asi checaremos que no hay dos al mismo tiempo, arriba y abajo
+    
     var barIsWhite: Bool = false
     var level: Int = 0
     var tHold1: Bool = false
@@ -498,59 +500,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         }
     }
     
-    //    func findNearestPath() -> [Double]?
-    //    {
-    //        let bXPos = Double(Blinky.position.x)
-    //        let bYPos = Double(Blinky.position.y)
-    //        let pXPos = Double(Player.position.x)
-    //        let pYPos = Double(Player.position.y)
-    //        var out = [Double]()
-    //        if (bYPos > 14.5 && bYPos < 15.5) && (bXPos < 214.5 && bXPos > 213.5 || bXPos < 642.5 && bXPos > 641.5 ) {
-    //            let pXDiv = findDiv(number: pXPos, divLength: 14)
-    //            let pYDiv = findDiv(number: pYPos, divLength: 14)
-    //            let bXDiv = findDiv(number: bXPos, divLength: 14)
-    //            let bYDiv = findDiv(number: bYPos, divLength: 14)
-    //            let fBXDiv = (findDiv(number: bXPos, divLength: 14) + 1)
-    //            let bBXDiv = (findDiv(number: bXPos, divLength: 14) - 1)
-    //            let uBYDiv = (findDiv(number: bYPos, divLength: 14) + 1)
-    //            let dBYDiv = (findDiv(number: bYPos, divLength: 14) - 1)
-    //            let currentXDiff: Double = abs(pXDiv - bXDiv) * abs(pXDiv - bXDiv)
-    //            let currentYDiff: Double = abs(pYDiv - bYDiv) * abs(pYDiv - bYDiv)
-    //            let forwardsDiff: Double = abs(pXDiv - fBXDiv) * abs(pXDiv - fBXDiv)
-    //            let backwardsDiff: Double = abs(pXDiv - bBXDiv) * abs(pXDiv - bBXDiv)
-    //            let upDiff: Double = abs(pYDiv - uBYDiv) * abs(pYDiv - uBYDiv)
-    //            let downDiff: Double = abs(pYDiv - dBYDiv) * abs(pYDiv - dBYDiv)
-    //            if bHorizontalMove {
-    //                if Blinky.xScale > 0 {
-    //                    out = [currentXDiff + upDiff, -1.0, currentXDiff + downDiff, forwardsDiff + currentYDiff]
-    //                } else {
-    //                    out = [currentXDiff + upDiff, backwardsDiff + currentYDiff, currentXDiff + downDiff, -1.0]
-    //                }
-    //            } else {
-    //                if bVerticalMove {
-    //                    out = [currentXDiff + upDiff, backwardsDiff + currentYDiff, -1.0, forwardsDiff + currentYDiff]
-    //                } else {
-    //                    out = [-1.0, backwardsDiff + currentYDiff, currentXDiff + downDiff, forwardsDiff + currentYDiff]
-    //                }
-    //            }
-    //            for (index, item) in out.enumerated() {
-    //                //Broken down to allow it to be solved in reasonable time
-    //                out[index] = sqrt(item)
-    //                out[index] = Double(item)
-    //            }
-    //            return out
-    //        }
-    //        return nil
-    //    }
-    
-    //    func bSpeed(xPos: CGFloat, yPos: CGFloat) -> CGFloat
-    //    {
-    //        if xPos < 50 || xPos > 650 || yPos > 16 || yPos < 14 {
-    //            return (blinkySpeed - 0.1)
-    //        }
-    //        return blinkySpeed
-    //    }
-    
     func checkOverflow( sprite: SKSpriteNode)
     {
         if sprite.position.x < 0
@@ -685,11 +634,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func initializeBorders() //Todo estara lleno
     {
         var offsetX = 0  //Separar barras
-        for index in 1...touchbarWidth/bar_width //Llenar top y bottom de bars
+        var width = Int(SKSpriteNode(imageNamed: "barSB" ).size.width)
+        
+        for index in 1...touchbarWidth/width //Llenar top y bottom de bars
         {
             addNewFloor(name: "BarF" + "\(index)", xPosition:CGFloat(offsetX))
             addNewCeil (name: "BarC" + "\(index)", xPosition:CGFloat(offsetX))
-            offsetX += bar_width
+            offsetX += width
         }
         
     }
@@ -719,27 +670,82 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     }
     
     //Creating stuff
-    func addNewFloorVoid(name: String,xPosition : CGFloat)
+    func addNewVoid(name: String,xPosition : CGFloat, floor :Bool)
     {
         //Crear objeto
         var _void = SKSpriteNode(imageNamed: "barSB2")
         _void.position.x = xPosition
-        _void.position.y = ylow_bars
         _void.name = name           //Maybe deberiamos identificarlo de otra forma
         //Agregar fisica para colisiones
         var s = _void.size
-        s.width -= 1            //Para que no este tan cabron, offset de 1
+        s.width -= 6            //Para que no este tan cabron, offset
         _void.physicsBody = SKPhysicsBody(rectangleOf: s)
         _void.physicsBody?.categoryBitMask = gamePhysics.Void
         _void.physicsBody?.contactTestBitMask = gamePhysics.Player
         _void.physicsBody?.isDynamic = true
         _void.physicsBody?.affectedByGravity = false
         _void.physicsBody?.collisionBitMask = 0
+        
         //Agregar al arreglo y al juego
-        floorBarArray.append(_void)
+        if floor
+        {
+            _void.position.y = ylow_bars
+            floorBarArray.append(_void)
+        }
+        else
+        {
+            _void.position.y = ytop_bars
+            ceilBarArray.append(_void)
+        }
+        
         self.addChild(_void)
     }
     
+    func shouldAddVoid() -> Bool
+    {
+        return (arc4random_uniform(20) == 0) && canAddVoid
+    }
+    
+    func recycleCeil()
+    {
+        if let first = ceilBarArray.first, !intersects(_:first)
+        {
+            let last = ceilBarArray.last!
+            ceilBarArray.removeFirst()
+            first.removeFromParent()
+            
+            if shouldAddVoid()
+            {
+                addNewVoid(name: first.name!,  xPosition: (last.position.x) + CGFloat(last.size.width), floor: false)
+                canAddVoid = false
+            }
+            else
+            {
+                addNewCeil(name: first.name!, xPosition: (last.position.x) + CGFloat(last.size.width))
+                canAddVoid = true
+            }
+        }
+    }
+    func recycleFloor()
+    {
+        if let first = floorBarArray.first, !intersects(_:first) //Si el primer elemento del suelo NO esta en pantalla (intersects)
+        {
+            let last = floorBarArray.last!
+            floorBarArray.removeFirst()
+            first.removeFromParent()
+            
+            if shouldAddVoid()
+            {
+                addNewVoid(name: first.name!,  xPosition: (last.position.x) + CGFloat(last.size.width), floor: true)
+                canAddVoid = false
+            }
+            else
+            {
+                addNewFloor(name: first.name!, xPosition: (last.position.x) + CGFloat(last.size.width))
+                canAddVoid = true
+            }
+        }
+    }
     
     func moveScene()
     {
@@ -750,41 +756,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                     node.position.x -= self.movement_speed
             })
         
-        //Si el primer elemento del suelo NO esta en pantalla (intersects)
-        if let first = floorBarArray.first, !intersects(_:first)
+        if arc4random_uniform(2) != 0 //50 - 50 Igualdad al momento de poner voids
         {
-            let last = floorBarArray.last!
-            floorBarArray.removeFirst()
-            
-            //Arroja 2 numeros, 0 y 1  -- arc4random_uniform(2)
-            if true
-            {
-                first.position.x = (last.position.x) + CGFloat(bar_width)
-                floorBarArray.append(first)
-            }
-            else
-            {
-                //first.removeFromParent()
-                //addNewFloorVoid( name:first.name!, xPosition: (last.position.x) + CGFloat(bar_width))
-            }
+            recycleCeil()
+            recycleFloor()
         }
-        
-        //Si el primer elemento del techo NO esta en pantalla (intersects)
-        if let first = ceilBarArray.first, !intersects(_:first)
+        else
         {
-            let last = ceilBarArray.last!
-            ceilBarArray.removeFirst()
-            
-            if true //Si volveremos a pintar este tile, solo cambiar posicion
-            {
-                first.position.x = (last.position.x) + CGFloat(bar_width)
-                ceilBarArray.append(first)
-            }
-            else
-            {
-                //first.removeFromParent()
-                //addNewCeilVoid(name: first.name, xPosition: (last.position.x) + CGFloat(bar_width))
-            }
+            recycleFloor()
+            recycleCeil()
         }
     }
     
