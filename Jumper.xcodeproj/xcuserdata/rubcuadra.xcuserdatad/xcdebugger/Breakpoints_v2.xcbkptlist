@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Jumper/WindowController.swift"
-            timestampString = "516141611.193286"
+            timestampString = "516150404.860841"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "377"
-            endingLineNumber = "377"
+            startingLineNumber = "225"
+            endingLineNumber = "225"
             landmarkName = "DeathFrames()"
             landmarkType = "7">
          </BreakpointContent>
