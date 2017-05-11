@@ -111,12 +111,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var max_movement_speed = CGFloat(10)    //max Speed
     var increaseSpeedInterval = 30          //in seconds
     var increaseSpeedFactor = CGFloat(0.5)  //se le sumara a movement_speed cada x seconds
+    let void_width_safezone =  CGFloat(8)   //Reducir rectangle del void
     
     //Sizes
     let touchbarHeight = 60
     let touchbarWidth = 1024
 
     //Views
+    let platform_file_name = "barSB"
+    let void_file_name = "barSB2"
     var ceilBarArray = [SKSpriteNode]()
     var floorBarArray = [SKSpriteNode]()
     var Player: SKSpriteNode!
@@ -125,12 +128,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     //Game Flags
     var score: Int = 0
     var gameOver = false   //Juego acabo
-    var canAddVoid = true  //Asi checaremos que no hay dos al mismo tiempo, arriba y abajo
 
     var barIsWhite: Bool = false
     
-    
-    
+    var canAddVoid = true  //Asi checaremos que no hay dos al mismo tiempo, arriba y abajo
+
     func createSprite(texture: [SKTexture], height: Int, width: Int, xPos: Int, yPos: Int, node: inout SKSpriteNode!, catBitMask: UInt32, conTestBitMask: [UInt32])
     {
         node = SKSpriteNode(texture: texture[0])
@@ -246,18 +248,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             }
             //self.miscAudio.prepareToPlay()
             //self.miscAudio.play()
-            for i in 1...11 {
-                if i == 1 {
+            for i in 1...11
+            {
+                if i == 1
+                {
                     PlayerD.position.y -= 1 //to account for differences in sprite dimensions
                 }
-                if i == 11 {
+                if i == 11
+                {
                     PlayerD.position.y += 1
                 }
                 PlayerD.run(SKAction.animate(with: deathFrames, timePerFrame: 0.1, resize: false, restore: true), withKey: "GameOver")
             }
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.3) {
-                self.view?.scene?.isPaused = true
-            }
+                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.3)
+                {
+                    self.view?.scene?.isPaused = true
+                }
         }
     }
     
@@ -266,7 +272,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if !self.gameOver && self.movement_speed < max_movement_speed
         {
             self.movement_speed += increaseSpeedFactor
-            print("Increase Speed \(self.movement_speed)")
         }
     }
     
@@ -299,7 +304,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         super.didMove(to: view)
         self.view?.scene?.isPaused = true
-        updateScore(value: "READY!")
+        //updateScore(value: "READY!")
         physicsWorld.contactDelegate = self
         do
         {
@@ -363,7 +368,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func initializeBorders() //Todo estara lleno
     {
         var offsetX = 0  //Separar barras
-        let width = Int(SKSpriteNode(imageNamed: "barSB" ).size.width)
+        let width = Int(SKSpriteNode(imageNamed: platform_file_name ).size.width)
         
         for index in 1...touchbarWidth/width //Llenar top y bottom de bars
         {
@@ -376,7 +381,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func addNewFloor(name: String,xPosition : CGFloat)
     {
-        let f = SKSpriteNode(imageNamed: "barSB" )
+        let f = SKSpriteNode(imageNamed: platform_file_name )
         f.xScale = 1
         f.yScale = 1
         f.position.y = ylow_bars
@@ -388,7 +393,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func addNewCeil(name: String,xPosition : CGFloat)
     {
-        let c = SKSpriteNode(imageNamed: "barSB" )
+        let c = SKSpriteNode(imageNamed: platform_file_name )
         c.xScale = 1
         c.yScale = 1
         c.position.y = ytop_bars
@@ -402,12 +407,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func addNewVoid(name: String,xPosition : CGFloat, floor :Bool)
     {
         //Crear objeto
-        var _void = SKSpriteNode(imageNamed: "barSB2")
+        var _void = SKSpriteNode(imageNamed: void_file_name)
         _void.position.x = xPosition
         _void.name = name           //Maybe deberiamos identificarlo de otra forma
+        
         //Agregar fisica para colisiones
         var s = _void.size
-        s.width -= 6            //Para que no este tan cabron, offset
+        s.width -= void_width_safezone            //Para que no este tan cabron, offset
         _void.physicsBody = SKPhysicsBody(rectangleOf: s)
         _void.physicsBody?.categoryBitMask = gamePhysics.Void
         _void.physicsBody?.contactTestBitMask = gamePhysics.Player
@@ -440,39 +446,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if let first = ceilBarArray.first, !intersects(_:first)
         {
             let last = ceilBarArray.last!
-            ceilBarArray.removeFirst()
-            first.removeFromParent()
-            
+    
             if shouldAddVoid()
             {
-                addNewVoid(name: first.name!,  xPosition: (last.position.x) + CGFloat(last.size.width), floor: false)
+                addNewVoid(name: first.name!,  xPosition: last.position.x + last.size.width, floor: false)
                 canAddVoid = false
             }
             else
             {
-                addNewCeil(name: first.name!, xPosition: (last.position.x) + CGFloat(last.size.width))
+                addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
                 canAddVoid = true
             }
+            ceilBarArray.removeFirst()
+            first.removeFromParent()
         }
     }
+    
     func recycleFloor()
     {
         if let first = floorBarArray.first, !intersects(_:first) //Si el primer elemento del suelo NO esta en pantalla (intersects)
         {
             let last = floorBarArray.last!
-            floorBarArray.removeFirst()
-            first.removeFromParent()
             
             if shouldAddVoid()
             {
-                addNewVoid(name: first.name!,  xPosition: (last.position.x) + CGFloat(last.size.width), floor: true)
+                addNewVoid(name: first.name!,  xPosition: last.position.x + last.size.width, floor: true)
                 canAddVoid = false
             }
             else
             {
-                addNewFloor(name: first.name!, xPosition: (last.position.x) + CGFloat(last.size.width))
+                addNewFloor(name: first.name!, xPosition: last.position.x + last.size.width)
                 canAddVoid = true
             }
+            
+            floorBarArray.removeFirst()
+            first.removeFromParent()
         }
     }
     
