@@ -324,15 +324,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         createSprite(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player, catBitMask: gamePhysics.Player,
                      conTestBitMask:[gamePhysics.Void])
-        //[gamePhysics.Dot, gamePhysics.Blinky])
         
         Player.texture = PlayerFrames[2]
-        //Blinky.physicsBody?.collisionBitMask = 0
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() ) //+ 4.5
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() ) //+ 4.5 //Start game
         {
-            //self.createDots()
-            //self.Blinky.zPosition = 5
+        
             self.Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "PlayerRun")
             
             self.view?.scene?.isPaused = false
@@ -342,12 +339,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func scheduledTimerWithTimeInterval()
     {
-        // Scheduling timer to Call the function **Countdown** with the interval of 1 seconds
+        // Scheduling timer to Call the function **Countdown** with the interval
         timer = Timer.scheduledTimer(timeInterval: TimeInterval(increaseSpeedInterval), target: self, selector: #selector(self.increaseSpeed), userInfo: nil, repeats: true)
     }
     
-    func checkGravity() //TODO : Animate jump
+    func checkGravity()
     {
+        // MARK: GRAVITY , MUST ANIMATE
         if gravity //Gravedad normal
         {
             if Player.yScale < 0 //Esta de cabeza
@@ -548,7 +546,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
 
 extension GameScene
 {
-    // MARK: Board Logic
+    // MARK: Board Logic, MUST IMPROVE
     func shouldAddCeilVoid() -> Bool
     {
         var result : Bool = canAddCeilVoid //Checar si podemos poner
