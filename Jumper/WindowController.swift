@@ -116,10 +116,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     //Sizes
     let touchbarHeight = 60
     let touchbarWidth = 1024
+    var barWidth : CGFloat  = 0             //Se llenan en el init de borders
+    var voidWidth : CGFloat = 0             //Se llenan en el init de borders
 
     //Views
     let platform_file_name = "barSB"
     let void_file_name = "barSB2"
+    
     var ceilBarArray = [SKSpriteNode]()
     var floorBarArray = [SKSpriteNode]()
     var Player: SKSpriteNode!
@@ -316,6 +319,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         {
             print("Could not update audio - eat1, sirenS, intro")
         }
+        
         initializeBorders()
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
@@ -367,13 +371,15 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func initializeBorders() //Todo estara lleno
     {
         var offsetX = 0  //Separar barras
-        let width = Int(SKSpriteNode(imageNamed: platform_file_name ).size.width)
         
-        for index in 1...touchbarWidth/width //Llenar top y bottom de bars
+        barWidth = SKSpriteNode(imageNamed: platform_file_name ).size.width  //Guardar size de las barras
+        voidWidth = SKSpriteNode(imageNamed: void_file_name ).size.width     //Size de los voids
+        
+        for index in 1...touchbarWidth/Int(barWidth) //Llenar top y bottom de bars
         {
             addNewFloor(name: "BarF" + "\(index)", xPosition:CGFloat(offsetX))
             addNewCeil (name: "BarC" + "\(index)", xPosition:CGFloat(offsetX))
-            offsetX += width
+            offsetX += Int(barWidth)
         }
         
     }
