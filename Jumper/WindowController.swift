@@ -118,6 +118,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     let touchbarWidth = 1024
     var barWidth : CGFloat  = 0             //Se llenan en el init de borders
     var voidWidth : CGFloat = 0             //Se llenan en el init de borders
+    var voidBounding : CGSize = CGSize()    //Bounding Box para fisica
 
     //Views
     let platform_file_name = "barSB32"
@@ -373,7 +374,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         var offsetX = 0  //Separar barras
         
         barWidth = SKSpriteNode(imageNamed: platform_file_name ).size.width  //Guardar size de las barras
-        voidWidth = SKSpriteNode(imageNamed: void_file_name ).size.width     //Size de los voids
+        voidBounding = SKSpriteNode(imageNamed: void_file_name ).size
+        voidWidth = voidBounding.width                                       //Size de los voids
+        voidBounding.width /= 4                                              //La cuarta parte del tamaño original
         
         for index in 1...touchbarWidth/Int(barWidth) //Llenar top y bottom de bars
         {
@@ -416,9 +419,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         _void.name = name           //Maybe deberiamos identificarlo de otra forma
         
         //Agregar fisica para colisiones
-        var s = _void.size
-        s.width -= void_width_safezone            //Para que no este tan cabron, offset
-        _void.physicsBody = SKPhysicsBody(rectangleOf: s)
+        _void.physicsBody = SKPhysicsBody(rectangleOf: voidBounding)
         _void.physicsBody?.categoryBitMask = gamePhysics.Void
         _void.physicsBody?.contactTestBitMask = gamePhysics.Player
         _void.physicsBody?.isDynamic = true
