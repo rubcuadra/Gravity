@@ -120,7 +120,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var voidWidth : CGFloat = 0             //Se llenan en el init de borders
 
     //Views
-    let platform_file_name = "barSB"
+    let platform_file_name = "barSB32"
     let void_file_name = "barSB2"
     
     var ceilBarArray = [SKSpriteNode]()
@@ -448,7 +448,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
             if shouldAddCeilVoid()
             {
-                addNewVoid(name: first.name!,  xPosition: last.position.x + last.size.width, floor: false)
+                addNewVoid(name: first.name!,  xPosition: last.position.x + voidWidth, floor: false)
             }
             else
             {
@@ -468,7 +468,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             
             if shouldAddFloorVoid()
             {
-                addNewVoid(name: first.name!,  xPosition: last.position.x + last.size.width, floor: true)
+                addNewVoid(name: first.name!,  xPosition: last.position.x + voidWidth, floor: true)
             }
             else
             {
