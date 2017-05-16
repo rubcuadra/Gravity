@@ -5,7 +5,7 @@
 //  Created by Ruben Cuadra on 5/6/17.
 //  Copyright © 2017 Ruben Cuadra. All rights reserved.
 //
-
+//TODO : QUE NO SALGAN 2 BARRAS EN LA MISMA POSICION
 import Foundation
 import Cocoa
 import SpriteKit
