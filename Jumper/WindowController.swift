@@ -111,7 +111,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var max_movement_speed = CGFloat(10)    //max Speed
     var increaseSpeedInterval = 30          //in seconds
     var increaseSpeedFactor = CGFloat(0.5)  //se le sumara a movement_speed cada x seconds
-    let void_width_safezone =  CGFloat(8)   //Reducir rectangle del void
     
     //Sizes
     let touchbarHeight = 60
@@ -121,21 +120,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var voidBounding : CGSize = CGSize()    //Bounding Box para fisica
 
     //Views
-    let platform_file_name = "barSB32"
+    let platform_file_name = "barSB"
     let void_file_name = "barSB2"
-    
+        //Platforms
     var ceilBarArray = [SKSpriteNode]()
     var floorBarArray = [SKSpriteNode]()
+        //Players
     var Player: SKSpriteNode!
     var PlayerFrames: [SKTexture]!
     
-    //Game Flags
+    //Game Flags/Logic
     var score: Int = 0
     var gameOver = false   //Juego acabo
+    var cord = Coordinator.instance
     
-    var canAddFloorVoid = true  //Las cambia el techo
-    var  canAddCeilVoid = true  //La cambia el suelo
-
     var barIsWhite: Bool = false
     
     func createSprite(texture: [SKTexture], height: Int, width: Int, xPos: Int, yPos: Int, node: inout SKSpriteNode!, catBitMask: UInt32, conTestBitMask: [UInt32])
@@ -446,16 +444,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if let first = ceilBarArray.first, !intersects(_:first)
         {
             let last = ceilBarArray.last!
-    
-            if shouldAddCeilVoid()
-            {
-                addNewVoid(name: first.name!,  xPosition: last.position.x + voidWidth, floor: false)
-            }
-            else
-            {
-                addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
-            }
-            
+            addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
             ceilBarArray.removeFirst()
             first.removeFromParent()
         }
@@ -466,16 +455,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if let first = floorBarArray.first, !intersects(_:first) //Si el primer elemento del suelo NO esta en pantalla (intersects)
         {
             let last = floorBarArray.last!
-            
-            if shouldAddFloorVoid()
-            {
-                addNewVoid(name: first.name!,  xPosition: last.position.x + voidWidth, floor: true)
-            }
-            else
-            {
-                addNewFloor(name: first.name!, xPosition: last.position.x + last.size.width)
-            }
-            
+            addNewFloor(name: first.name!, xPosition: last.position.x + last.size.width)
             floorBarArray.removeFirst()
             first.removeFromParent()
         }
@@ -489,17 +469,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 (node, stop) -> Void in
                     node.position.x -= self.movement_speed
             })
-        
-        if arc4random_uniform(2) != 0 //50 - 50 Igualdad al momento de poner voids
-        {
-            recycleCeil()
-            recycleFloor()
-        }
-        else
-        {
-            recycleFloor()
-            recycleCeil()
-        }
+        //TODO CAMBIAR EL ORDEN AL AZAR
+        recycleCeil()
+        recycleFloor()
     }
     
     //Update everything (calls other functions)
@@ -551,42 +523,44 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     }
 }
 
-extension GameScene
-{
-    // MARK: Board Logic, MUST IMPROVE
-    func shouldAddCeilVoid() -> Bool
-    {
-        var result : Bool = canAddCeilVoid //Checar si podemos poner
-        //TODO ESE RANDOM ALV ALGO BIEN
-        result = result && (arc4random_uniform(20)==0) //Si podemos a ver si la probabilidad nos deja
-        
-        if result
-        {
-            canAddFloorVoid = false //Asegurarnos que si le diremos que si, que el otro no lo ponga
-        }
-        else
-        {
-            canAddFloorVoid = true  //Si no ponemos decirle al otro que si puede
-        }
-        
-        return result
-    }
-    func shouldAddFloorVoid() -> Bool
-    {
-        var result : Bool = canAddFloorVoid //Checar si podemos poner
-        //TODO ESE RANDOM ALV ALGO BIEN
-        result = result && (arc4random_uniform(20)==0) //Si podemos a ver si la probabilidad nos deja
-        
-        if result
-        {
-            canAddCeilVoid = false //Asegurarnos que si le diremos que si, que el otro no lo ponga
-        }
-        else
-        {
-            canAddCeilVoid = true  //Si no ponemos decirle al otro que si puede
-        }
-        
-        return result
-    }
-}
+//extension GameScene
+//{
+//    var canAddFloorVoid = true  //Las cambia el techo
+//    var  canAddCeilVoid = true  //La cambia el suelo
+//    // MARK: Board Logic, MUST IMPROVE
+//    func shouldAddCeilVoid() -> Bool
+//    {
+//        var result : Bool = canAddCeilVoid //Checar si podemos poner
+//        //TODO ESE RANDOM ALV ALGO BIEN
+//        result = result && (arc4random_uniform(20)==0) //Si podemos a ver si la probabilidad nos deja
+//        
+//        if result
+//        {
+//            canAddFloorVoid = false //Asegurarnos que si le diremos que si, que el otro no lo ponga
+//        }
+//        else
+//        {
+//            canAddFloorVoid = true  //Si no ponemos decirle al otro que si puede
+//        }
+//        
+//        return result
+//    }
+//    func shouldAddFloorVoid() -> Bool
+//    {
+//        var result : Bool = canAddFloorVoid //Checar si podemos poner
+//        //TODO ESE RANDOM ALV ALGO BIEN
+//        result = result && (arc4random_uniform(20)==0) //Si podemos a ver si la probabilidad nos deja
+//        
+//        if result
+//        {
+//            canAddCeilVoid = false //Asegurarnos que si le diremos que si, que el otro no lo ponga
+//        }
+//        else
+//        {
+//            canAddCeilVoid = true  //Si no ponemos decirle al otro que si puede
+//        }
+//        
+//        return result
+//    }
+//}
 
