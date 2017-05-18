@@ -30,75 +30,68 @@ class Coordinator
     
     //Game Logic Flags
     let maxVoidsTogether = 5
-    var currentVoidsTogether = 0
+    var currentVoidsTogether = 0  //Control flag
+    //AddTop y AddLow, cuando NO caen en void invocan a su contraparte
+    //La idea es que con esto sepamos si la invoca con su mismo indice o
+    //con su indice + 1
+    var ceil_offset = 0
+    var floor_offset = 0
     
-    func nextCeilIsVoid() -> Bool
+    public func nextCeilIsVoid() -> Bool
     {
-        if ceil_production.isEmpty
-        {
-            return false
-        }
-        return !ceil_production.removeFirst()
+        ceil_production.append(ceil_production.removeFirst())
+        return !ceil_production.last!
     }
     
-    func nextFloorIsVoid() -> Bool
+    public func nextFloorIsVoid() -> Bool
     {
-        if floor_production.isEmpty
-        {
-            return false
-        }
-        return !floor_production.removeFirst()
+        floor_production.append(floor_production.removeFirst())
+        return !floor_production.last!
     }
     
-    //Nos dira si deberiamos poner un void con base en la probabilidad
-    func randVoid() -> Bool
-    {
-        return arc4random_uniform(8)==0
-    }
-    
-    func addTop(i: Int)
+    private func addTop(i: Int)
     {
         if !(i < (Coordinator.size-1))  //Siempre dejamos las ultimas posiciones libres
         { return }
         
         //SI la funcion random nos dice que debemos agregar Y 
         //no se  ha puesto un void en la diagonal principal
-        if randVoid() && floor_production[i-1] && currentVoidsTogether<maxVoidsTogether
+        if floor_production[i-1] && randVoid() && currentVoidsTogether<maxVoidsTogether
         {
             ceil_production[i] = false    //El actual sera un void
             floor_production[i] = true    //Asegurar el otro no sera void
             floor_production[i+1] = true  //Asegurar que el siguiente tampoco es void
             currentVoidsTogether += 1
-            addTop(i: i + 1)              //Le decimos que le diga al otro que no puede poner?
+            addTop(i: i + 1)
         }
         else                        //Poner platform
         {
             ceil_production[i] = true
             currentVoidsTogether = 0
-            addLow(i: i)
+            addLow(i: i + ceil_offset)
         }
     }
     
-    func addLow(i:Int)
+    private func addLow(i:Int)
     {
         if !(i < (Coordinator.size-1))  //Siempre dejamos las ultimas posiciones libres
         { return }
         
         //SI la funcion random nos dice que debemos agregar Y
         //no se  ha puesto un void en la diagonal principal
-        if randVoid() && ceil_production[i-1] && currentVoidsTogether<maxVoidsTogether
+        if ceil_production[i-1] && randVoid() && currentVoidsTogether<maxVoidsTogether
         {
             floor_production[i] = false     //El actual sera un void
             ceil_production[i] = true       //Asegurar el otro no sera void
             ceil_production[i+1] = true     //Asegurar que el siguiente tampoco es void
             currentVoidsTogether += 1
-            addLow(i: i + 1)                //Le decimos que le diga al otro que no puede poner?
+            addLow(i: i + 1)
         }
         else                                //Poner platform
         {
             ceil_production[i] = true
             currentVoidsTogether = 0
-            addTop(i: i + 1) //Con esto decimos que low sera el que aumenta, CAMBIAR ESTO
+            addTop(i: i + floor_offset) //Con esto decimos que low sera el que aumenta, CAMBIAR ESTO
         }
     }
     private func printProds()
@@ -108,9 +101,24 @@ class Coordinator
             print("\(i) \(floor_production[i]) \(ceil_production[i])")
         }
     }
+    
+    func fillFromTop(ix: Int)
+    {
+        ceil_offset = 0
+        floor_offset = 1
+        addTop(i: ix) //Empieza llenando desde arribaa
+    }
+    
     private init() //Singleton
     {
-        addTop(i: 1)
+        fillFromTop(ix: 1)
         printProds()
+    }
+    
+    //MARK : RANDOM LOGIC
+    //Nos dira si deberiamos poner un void con base en la probabilidad
+    private func randVoid() -> Bool
+    {
+        return arc4random_uniform(8)==0
     }
 }
