@@ -486,9 +486,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 (node, stop) -> Void in
                     node.position.x -= self.movement_speed
             })
-        //TODO CAMBIAR EL ORDEN AL AZAR
-        recycleCeil()
-        recycleFloor()
+        
+        recycleCeil()   //Pone Void o Piso segun coord
+        recycleFloor()  //Pone Void o Piso segun coord
+        coord.refill()  //Ya que nos dijo que poner, decirle que siga creando
     }
     
     //Update everything (calls other functions)

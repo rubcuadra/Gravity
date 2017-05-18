@@ -29,70 +29,87 @@ class Coordinator
     var floor_production = [Bool](repeating: true, count: size)
     
     //Game Logic Flags
-    let maxVoidsTogether = 5
-    var currentVoidsTogether = 0  //Control flag
-    //AddTop y AddLow, cuando NO caen en void invocan a su contraparte
-    //La idea es que con esto sepamos si la invoca con su mismo indice o
-    //con su indice + 1
-    var ceil_offset = 0
-    var floor_offset = 0
+    let maxVoidsTogether = 3
+    var currentTopVoidsTogether = 0  //Control flag
+    var currentLowVoidsTogether = 0  //Control flag
+    var temp = true          //Variable temp que usaran las funciones next, mas eficiente que estar creando y borrando variables
+    
+    let cooldown = 2 //Poder checar arra[size-1] y array[size-2]
+    var lastTopDummies  = 0 //Esto se debe sumar 1 cada vez que insertamos un TRUE al final
+    var lastLowDummies  = 0 //Esto se debe sumar 1 cada vez que insertamos un TRUE al final
     
     public func nextCeilIsVoid() -> Bool
     {
-        ceil_production.append(ceil_production.removeFirst())
-        return !ceil_production.last!
+        temp = ceil_production.removeFirst()
+        ceil_production.append(true) ; lastTopDummies += 1
+        return !temp
     }
     
     public func nextFloorIsVoid() -> Bool
     {
-        floor_production.append(floor_production.removeFirst())
-        return !floor_production.last!
+        temp = floor_production.removeFirst()
+        floor_production.append(true) ; lastLowDummies += 1
+        return !temp
     }
     
-    private func addTop(i: Int)
+    //La idea es que esta funcion sea invocada despues de haber popeado ambos arrays
+    //(Haber llamado tanto nextCeil como nextFloor)
+    public func refill()
     {
-        if !(i < (Coordinator.size-1))  //Siempre dejamos las ultimas posiciones libres
-        { return }
+        if (lastLowDummies >= cooldown) && (lastTopDummies >= cooldown)
+        {
+            if arc4random_uniform(2)==0 //50%
+            {
+                addLow(i: Coordinator.size-1, leader: true) //Empieza llenando desde arriba
+            }
+            else
+            {
+                addTop(i: Coordinator.size-1, leader: true) //Empieza llenando desde abajo
+            }
+            lastTopDummies = 0
+            lastLowDummies = 0
+        }
+    }
+    
+    private func addTop(i: Int, leader: Bool)
+    {
+        if !(i < Coordinator.size) { return }
         
-        //SI la funcion random nos dice que debemos agregar Y 
-        //no se  ha puesto un void en la diagonal principal
-        if floor_production[i-1] && randVoid() && currentVoidsTogether<maxVoidsTogether
+        //SI del otro lado, en este mismo indice y -1 NO hay voids, podemos poner
+        //SI no hemos puesto el limite de seguidos
+        //SI la funcion random nos dice que debemos poner
+        if (floor_production[i-1] && floor_production[i]) && currentTopVoidsTogether<maxVoidsTogether && randVoid()
         {
             ceil_production[i] = false    //El actual sera un void
-            floor_production[i] = true    //Asegurar el otro no sera void
-            floor_production[i+1] = true  //Asegurar que el siguiente tampoco es void
-            currentVoidsTogether += 1
-            addTop(i: i + 1)
+            currentTopVoidsTogether += 1
         }
-        else                        //Poner platform
+        else
         {
-            ceil_production[i] = true
-            currentVoidsTogether = 0
-            addLow(i: i + ceil_offset)
+            ceil_production[i] = true     //Poner platform
+            currentTopVoidsTogether = 0
         }
+        
+        addLow(i: i + (leader ? 0 : 1), leader: !leader ) //Si es lider que le sume 1 el otro
     }
     
-    private func addLow(i:Int)
+    private func addLow(i:Int, leader:Bool)
     {
-        if !(i < (Coordinator.size-1))  //Siempre dejamos las ultimas posiciones libres
-        { return }
+        if !(i < Coordinator.size) { return }
         
-        //SI la funcion random nos dice que debemos agregar Y
-        //no se  ha puesto un void en la diagonal principal
-        if ceil_production[i-1] && randVoid() && currentVoidsTogether<maxVoidsTogether
+        //SI del otro lado, en este mismo indice y -1 NO hay voids, podemos poner
+        //SI no hemos puesto el limite de seguidos
+        //SI la funcion random nos dice que debemos poner
+        if (ceil_production[i-1] && ceil_production[i]) && currentLowVoidsTogether<maxVoidsTogether && randVoid()
         {
             floor_production[i] = false     //El actual sera un void
-            ceil_production[i] = true       //Asegurar el otro no sera void
-            ceil_production[i+1] = true     //Asegurar que el siguiente tampoco es void
-            currentVoidsTogether += 1
-            addLow(i: i + 1)
+            currentLowVoidsTogether += 1
         }
         else                                //Poner platform
         {
-            ceil_production[i] = true
-            currentVoidsTogether = 0
-            addTop(i: i + floor_offset) //Con esto decimos que low sera el que aumenta, CAMBIAR ESTO
+            floor_production[i] = true
+            currentLowVoidsTogether = 0
         }
+        addTop(i: i + (leader ? 0 : 1), leader: !leader ) //Si es lider que le sume 1 el otro
     }
     private func printProds()
     {
@@ -102,16 +119,10 @@ class Coordinator
         }
     }
     
-    func fillFromTop(ix: Int)
-    {
-        ceil_offset = 0
-        floor_offset = 1
-        addTop(i: ix) //Empieza llenando desde arribaa
-    }
-    
     private init() //Singleton
     {
-        fillFromTop(ix: 1)
+        addTop(i: 1, leader : true) //Empieza llenando desde arribaa
+        //addLow(i: 1, leader: true) //Empieza llenando desde arribaa
         printProds()
     }
     
@@ -119,6 +130,6 @@ class Coordinator
     //Nos dira si deberiamos poner un void con base en la probabilidad
     private func randVoid() -> Bool
     {
-        return arc4random_uniform(8)==0
+        return true//arc4random_uniform(8)==0
     }
 }
