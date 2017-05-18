@@ -473,7 +473,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             }
             else
             {
-                addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
+                addNewFloor(name: first.name!,  xPosition: last.position.x + last.size.width )
             }
         }
     }

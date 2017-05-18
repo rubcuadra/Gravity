@@ -34,28 +34,26 @@ class Coordinator
     
     func nextCeilIsVoid() -> Bool
     {
-        return false
-//        if ceil_production.isEmpty
-//        {
-//            return false
-//        }
-//        return !ceil_production.removeFirst()
+        if ceil_production.isEmpty
+        {
+            return false
+        }
+        return !ceil_production.removeFirst()
     }
     
     func nextFloorIsVoid() -> Bool
     {
-        return true
-//        if floor_production.isEmpty
-//        {
-//            return false
-//        }
-//        return !floor_production.removeFirst()
+        if floor_production.isEmpty
+        {
+            return false
+        }
+        return !floor_production.removeFirst()
     }
     
     //Nos dira si deberiamos poner un void con base en la probabilidad
     func randVoid() -> Bool
     {
-        return arc4random_uniform(2)==0
+        return arc4random_uniform(8)==0
     }
     
     func addTop(i: Int)
