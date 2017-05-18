@@ -9,10 +9,7 @@
 import Foundation
 import SpriteKit
 
-//TODO : (RE)LLENAR COORDINATOR
-
 //TODO : Mejorar Random
-//TODO : Decidir cual AddLow OR AddTop debera tener el +1(?)
 //TODO : IR DESTRUYENDO EL PISO ??
 
 class Coordinator
