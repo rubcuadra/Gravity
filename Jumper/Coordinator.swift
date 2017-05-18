@@ -130,6 +130,6 @@ class Coordinator
     //Nos dira si deberiamos poner un void con base en la probabilidad
     private func randVoid() -> Bool
     {
-        return true//arc4random_uniform(8)==0
+        return arc4random_uniform(8)==0
     }
 }
