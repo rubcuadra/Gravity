@@ -132,7 +132,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     //Game Flags/Logic
     var score: Int = 0
     var gameOver = false   //Juego acabo
-    var cord = Coordinator.instance
+    var coord = Coordinator.instance
     
     var barIsWhite: Bool = false
     
@@ -342,7 +342,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func scheduledTimerWithTimeInterval()
     {
-        // Scheduling timer to Call the function **Countdown** with the interval
+        // Scheduling timer to Call the function **increaseSpeedInterval** with the interval
         timer = Timer.scheduledTimer(timeInterval: TimeInterval(increaseSpeedInterval), target: self, selector: #selector(self.increaseSpeed), userInfo: nil, repeats: true)
     }
     
@@ -441,12 +441,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func recycleCeil()
     {
+        //Si ya no esta visible
         if let first = ceilBarArray.first, !intersects(_:first)
         {
             let last = ceilBarArray.last!
-            addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
             ceilBarArray.removeFirst()
             first.removeFromParent()
+            
+            if coord.nextCeilIsVoid()
+            {
+                addNewVoid(name: first.name!, xPosition: last.position.x + voidWidth, floor: false)
+            }
+            else
+            {
+                addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
+            }
         }
     }
     
@@ -455,9 +464,17 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if let first = floorBarArray.first, !intersects(_:first) //Si el primer elemento del suelo NO esta en pantalla (intersects)
         {
             let last = floorBarArray.last!
-            addNewFloor(name: first.name!, xPosition: last.position.x + last.size.width)
             floorBarArray.removeFirst()
             first.removeFromParent()
+            
+            if coord.nextFloorIsVoid()
+            {
+                addNewVoid(name: first.name!, xPosition: last.position.x + last.size.width, floor: true)
+            }
+            else
+            {
+                addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
+            }
         }
     }
     

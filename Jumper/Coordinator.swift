@@ -10,9 +10,9 @@ import Foundation
 import SpriteKit
 
 //TODO : (RE)LLENAR COORDINATOR
+
 //TODO : Mejorar Random
-//TODO : Decidir cual AddLow OR AddTop debera tener el +1
-//TODO : LIMITAR LA CANTIDAD DE VOID SEGUIDOS QUE PUEDEN SALIR
+//TODO : Decidir cual AddLow OR AddTop debera tener el +1(?)
 //TODO : IR DESTRUYENDO EL PISO ??
 
 class Coordinator
@@ -34,18 +34,28 @@ class Coordinator
     
     func nextCeilIsVoid() -> Bool
     {
-        return !ceil_production.removeFirst()
+        return false
+//        if ceil_production.isEmpty
+//        {
+//            return false
+//        }
+//        return !ceil_production.removeFirst()
     }
     
     func nextFloorIsVoid() -> Bool
     {
-        return !floor_production.removeFirst()
+        return true
+//        if floor_production.isEmpty
+//        {
+//            return false
+//        }
+//        return !floor_production.removeFirst()
     }
     
     //Nos dira si deberiamos poner un void con base en la probabilidad
     func randVoid() -> Bool
     {
-        return arc4random_uniform(8)==0
+        return arc4random_uniform(2)==0
     }
     
     func addTop(i: Int)
