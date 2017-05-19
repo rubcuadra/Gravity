@@ -12,14 +12,7 @@ import SpriteKit
 import GameplayKit
 import AVFoundation
 
-var gravity = true //True es normal, en el suelo
-let xstart_pos = CGFloat(50)
-
-let player_floor_pos = CGFloat(10)
-let player_ceil_pos = CGFloat(20)
-
-let ytop_bars = CGFloat(28)
-let ylow_bars = CGFloat(2)
+var gravity = true //True es normal, en el suelo, Global para que se cambie con input
 
 struct gamePhysics
 {
@@ -77,7 +70,8 @@ class WindowController: NSWindowController
 @available(OSX 10.12.2, *)
 extension WindowController: NSTouchBarDelegate
 {
-    func touchBar(_ touchBar: NSTouchBar, makeItemForIdentifier identifier: NSTouchBarItemIdentifier) -> NSTouchBarItem? {
+    func touchBar(_ touchBar: NSTouchBar, makeItemForIdentifier identifier: NSTouchBarItemIdentifier) -> NSTouchBarItem?
+    {
         
         switch identifier
         {
@@ -91,9 +85,7 @@ extension WindowController: NSTouchBarDelegate
                 //item.view.gestureRecognizers.append(NSGestureRecognizer.init())
                 //item.view.acceptsTouchEvents = true
                 gameView.presentScene(scene)
-                
-                
-                
+
                 return item
                 
             default:
@@ -107,34 +99,41 @@ class GameScene: SKScene, SKPhysicsContactDelegate
 {
     //Difficulty Variables
     var timer = Timer()
-    var movement_speed = CGFloat(4)         //initialSpeed
-    var max_movement_speed = CGFloat(10)    //max Speed
-    var increaseSpeedInterval = 30          //in seconds
-    var increaseSpeedFactor = CGFloat(0.5)  //se le sumara a movement_speed cada x seconds
+    var movement_speed = CGFloat(4)         //InitialSpeed
+    var max_movement_speed = CGFloat(10)    //Max Speed
+    var increaseDifficultyInterval = 10     //Cada cuanto cambia la diffic in seconds
+    var increaseSpeedFactor = CGFloat(0.5)  //Se le sumara a movement_speed cada x seconds
     
-    //Sizes
+    //Sizes - Coords
     let touchbarHeight = 60
     let touchbarWidth = 1024
     var barWidth : CGFloat  = 0             //Se llenan en el init de borders
     var voidWidth : CGFloat = 0             //Se llenan en el init de borders
     var voidBounding : CGSize = CGSize()    //Bounding Box para fisica
+    
+    let xstart_pos = CGFloat(50)       //Distancia en X donde esta el player
+    let player_floor_pos = CGFloat(10) //Posicion 'Suelo' del Player
+    let player_ceil_pos = CGFloat(20)  //Posicion 'Techo' del Player
+    let ytop_bars = CGFloat(28)        //Posicion donde se coloca la platform CEIL
+    let ylow_bars = CGFloat(2)         //Posicion donde se coloca la platform FLOOR
 
     //Views
     let platform_file_name = "barSB"
     let void_file_name = "barSB2"
-        //Platforms
+        //Platforms Arrays
     var ceilBarArray = [SKSpriteNode]()
     var floorBarArray = [SKSpriteNode]()
-        //Players
+        //Players Sprites
     var Player: SKSpriteNode!
     var PlayerFrames: [SKTexture]!
     
     //Game Flags/Logic
-    var score: Int = 0
-    var gameOver = false   //Juego acabo
+    var score: UInt = 0
     var coord = Coordinator.instance
+    var difficulty_switch = true //Nos dice si subir velocidad o probabilidad void
+    var gameOver = false         //Juego acabo
     
-    var barIsWhite: Bool = false
+    var barIsWhite: Bool = false //Flash
     
     func createSprite(texture: [SKTexture], height: Int, width: Int, xPos: Int, yPos: Int, node: inout SKSpriteNode!, catBitMask: UInt32, conTestBitMask: [UInt32])
     {
@@ -163,6 +162,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func GameOver()
     {
         self.view?.scene?.isPaused = true
+        gameOver = true
         //sirenAudio.stop()
         //blinky.removeFromParent()
         //self.removeDots()
@@ -269,12 +269,28 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 }
         }
     }
-    
-    func increaseSpeed()
+    func increaseDifficulty()
     {
-        if !self.gameOver && self.movement_speed < max_movement_speed
+        if (!self.gameOver ||  !self.view!.scene!.isPaused )
         {
-            self.movement_speed += increaseSpeedFactor
+            if difficulty_switch //Subir speed
+            {
+                if self.movement_speed < max_movement_speed
+                {
+                    self.movement_speed += increaseSpeedFactor
+                }
+                print("MOVEMENT SPEED \(self.movement_speed)")
+            }
+            else                 //Subir Probabilidad
+            {
+                coord.increaseDifficulty()
+                print ("DIFFICULTY \(coord.difficulty)")
+            }
+            difficulty_switch = !difficulty_switch
+        }
+        else
+        {
+            print("GAME OVER o PAUSED")
         }
     }
     
@@ -343,7 +359,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func scheduledTimerWithTimeInterval()
     {
         // Scheduling timer to Call the function **increaseSpeedInterval** with the interval
-        timer = Timer.scheduledTimer(timeInterval: TimeInterval(increaseSpeedInterval), target: self, selector: #selector(self.increaseSpeed), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: TimeInterval(increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)
     }
     
     func checkGravity()
@@ -519,8 +535,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                         self.addChild(self.Player)
                         
                         
-                        self.Player.position.x = xstart_pos
-                        self.Player.position.y = player_floor_pos
+                        self.Player.position.x = self.xstart_pos
+                        self.Player.position.y = self.player_floor_pos
                         
                         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) //Start Game
                         {
@@ -540,45 +556,3 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         }
     }
 }
-
-//extension GameScene
-//{
-//    var canAddFloorVoid = true  //Las cambia el techo
-//    var  canAddCeilVoid = true  //La cambia el suelo
-//    // MARK: Board Logic, MUST IMPROVE
-//    func shouldAddCeilVoid() -> Bool
-//    {
-//        var result : Bool = canAddCeilVoid //Checar si podemos poner
-//        //TODO ESE RANDOM ALV ALGO BIEN
-//        result = result && (arc4random_uniform(20)==0) //Si podemos a ver si la probabilidad nos deja
-//        
-//        if result
-//        {
-//            canAddFloorVoid = false //Asegurarnos que si le diremos que si, que el otro no lo ponga
-//        }
-//        else
-//        {
-//            canAddFloorVoid = true  //Si no ponemos decirle al otro que si puede
-//        }
-//        
-//        return result
-//    }
-//    func shouldAddFloorVoid() -> Bool
-//    {
-//        var result : Bool = canAddFloorVoid //Checar si podemos poner
-//        //TODO ESE RANDOM ALV ALGO BIEN
-//        result = result && (arc4random_uniform(20)==0) //Si podemos a ver si la probabilidad nos deja
-//        
-//        if result
-//        {
-//            canAddCeilVoid = false //Asegurarnos que si le diremos que si, que el otro no lo ponga
-//        }
-//        else
-//        {
-//            canAddCeilVoid = true  //Si no ponemos decirle al otro que si puede
-//        }
-//        
-//        return result
-//    }
-//}
-

@@ -9,7 +9,6 @@
 import Foundation
 import SpriteKit
 
-//TODO : Mejorar Random
 //TODO : IR DESTRUYENDO EL PISO ??
 
 class Coordinator
@@ -26,11 +25,15 @@ class Coordinator
     var floor_production = [Bool](repeating: true, count: size)
     
     //Game Logic Flags
-    let maxVoidsTogether = 3
+    let topDifficulty : UInt32 = 90
+    var difficulty : UInt32 = 10
+    
+    let maxVoidsTogether = 3         //Max Voids
     var currentTopVoidsTogether = 0  //Control flag
     var currentLowVoidsTogether = 0  //Control flag
-    var temp = true          //Variable temp que usaran las funciones next, mas eficiente que estar creando y borrando variables
     
+    //Variable temp que usaran las funciones next, mas eficiente que estar creando y borrando variables
+    var temp = true
     let cooldown = 2 //Poder checar arra[size-1] y array[size-2]
     var lastTopDummies  = 0 //Esto se debe sumar 1 cada vez que insertamos un TRUE al final
     var lastLowDummies  = 0 //Esto se debe sumar 1 cada vez que insertamos un TRUE al final
@@ -47,6 +50,14 @@ class Coordinator
         temp = floor_production.removeFirst()
         floor_production.append(true) ; lastLowDummies += 1
         return !temp
+    }
+    public func increaseDifficulty()
+    {
+        if difficulty >= topDifficulty
+        {
+            return
+        }
+        difficulty += 10
     }
     
     //La idea es que esta funcion sea invocada despues de haber popeado ambos arrays
@@ -120,13 +131,14 @@ class Coordinator
     {
         addTop(i: 1, leader : true) //Empieza llenando desde arribaa
         //addLow(i: 1, leader: true) //Empieza llenando desde arribaa
-        printProds()
+        
+        //printProds()
     }
     
     //MARK : RANDOM LOGIC
     //Nos dira si deberiamos poner un void con base en la probabilidad
     private func randVoid() -> Bool
     {
-        return arc4random_uniform(8)==0
+        return arc4random_uniform(100)<=difficulty //X de 100, un 20%,30%... hasta 80??
     }
 }
