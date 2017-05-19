@@ -24,7 +24,8 @@ class Coordinator
     var  ceil_production = [Bool](repeating: true, count: size)
     var floor_production = [Bool](repeating: true, count: size)
     
-    //MARK : Game Logic Flags
+    //MARK : Game Logic
+    var score: UInt = 0
     let topDifficulty : UInt32 = 90 //90 de 100 es la max probab
     var difficulty : UInt32 = 10    //10 de 100 es la probab inicial
     

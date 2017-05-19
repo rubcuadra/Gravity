@@ -49,7 +49,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var PlayerFrames: [SKTexture]!
     
     //Game Flags/Logic
-    var score: UInt = 0
     var gravity = true
     var coord = Coordinator.instance
     var gameOver = false         //Juego acabo
@@ -156,7 +155,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         Player.removeAction(forKey: "PlayerRun")
         Player.texture = SKTexture(imageNamed: "Player3")
-        //updateScore(value: String(describing: score) + "\n GAME OVER")
         self.Player.removeFromParent()
         self.addChild(PlayerD)
         
@@ -231,9 +229,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     override func didMove(to view: SKView)
     {
         super.didMove(to: view)
-        print("DID MOVE")
+        
+        NotificationCenter.default.addObserver(self, selector: #selector( switchGravity ),
+                                                 name: jumpNotification,
+                                                 object: nil) //Name viene del windowController
+        
         self.view?.scene?.isPaused = true
-        //updateScore(value: "READY!")
         physicsWorld.contactDelegate = self
         do
         {

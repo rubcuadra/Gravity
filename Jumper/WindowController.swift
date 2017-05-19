@@ -10,10 +10,7 @@ import Foundation
 import GameplayKit
 import AVFoundation
 
-protocol DetailsDelegate : class
-{
-    func updateLabel(Score: Int)
-}
+let jumpNotification = Notification.Name("CG") //ChageGravity
 
 fileprivate extension NSTouchBarCustomizationIdentifier
 {
@@ -27,9 +24,6 @@ fileprivate extension NSTouchBarItemIdentifier
 
 class WindowController: NSWindowController
 {
-    let scene = GameScene() //Aqui esta el juego
-    let gameView = SKView()
-    
     override func windowDidLoad()
     {
         super.windowDidLoad()
@@ -54,7 +48,8 @@ class WindowController: NSWindowController
         switch event.keyCode
         {
             case 49:    //spaceBar
-                scene.switchGravity()
+                NotificationCenter.default.post(name: jumpNotification,
+                                                object: nil)
                 break
             default:
                 break
@@ -71,6 +66,8 @@ extension WindowController: NSTouchBarDelegate
         switch identifier
         {
             case NSTouchBarItemIdentifier.customView:
+                let scene = GameScene() //Aqui esta el juego
+                let gameView = SKView()
                 let item = NSCustomTouchBarItem(identifier: identifier)
                 item.view = gameView
                 item.view.allowedTouchTypes = NSTouchTypeMask.direct
