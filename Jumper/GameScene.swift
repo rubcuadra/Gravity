@@ -17,15 +17,14 @@ struct gamePhysics
     //static let Blinky: UInt32 = 3
 }
 
+//TODO : ANIMAR EL SALTO
+//TODO : DEFINIR CADA CUANTO CAMBIARA LA DIFICULTAD Y COMO SE HARA
+//TODO : SUELO QUE SE DESTRUYE
+
 class GameScene: SKScene, SKPhysicsContactDelegate
 {
-    //Difficulty Variables
+    //Hilo de funciones cada x segundos
     var timer = Timer()
-    var movement_speed = CGFloat(4)         //InitialSpeed
-    var max_movement_speed = CGFloat(10)    //Max Speed
-    var increaseDifficultyInterval = 10     //Cada cuanto cambia la diffic in seconds
-    var increaseSpeedFactor = CGFloat(0.5)  //Se le sumara a movement_speed cada x seconds
-    
     //Sizes - Coords
     let touchbarHeight = 60
     let touchbarWidth = 1024
@@ -53,7 +52,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var score: UInt = 0
     var gravity = true
     var coord = Coordinator.instance
-    var difficulty_switch = true //Nos dice si subir velocidad o probabilidad void
     var gameOver = false         //Juego acabo
     
     var barIsWhite: Bool = false //Flash
@@ -194,22 +192,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     }
     func increaseDifficulty()
     {
+        //SI no se ha pausado el juego o no ha terminado
         if (!self.gameOver ||  !self.view!.scene!.isPaused )
         {
-            if difficulty_switch //Subir speed
-            {
-                if self.movement_speed < max_movement_speed
-                {
-                    self.movement_speed += increaseSpeedFactor
-                }
-                print("MOVEMENT SPEED \(self.movement_speed)")
-            }
-            else                 //Subir Probabilidad
-            {
-                coord.increaseDifficulty()
-                print ("DIFFICULTY \(coord.difficulty)")
-            }
-            difficulty_switch = !difficulty_switch
+            coord.increaseDifficulty()
         }
         else
         {
@@ -283,12 +269,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func scheduledTimerWithTimeInterval()
     {
         // Scheduling timer to Call the function **increaseSpeedInterval** with the interval
-        timer = Timer.scheduledTimer(timeInterval: TimeInterval(increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)
+        timer = Timer.scheduledTimer(timeInterval: TimeInterval(coord.increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)
     }
     
-    func checkGravity()
+    private func checkGravity()
     {
-        // MARK: GRAVITY , MUST ANIMATE
         if gravity //Gravedad normal
         {
             if Player.yScale < 0 //Esta de cabeza
@@ -307,7 +292,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         }
     }
     
-    func initializeBorders() //Todo estara lleno
+    private func initializeBorders() //Todo estara lleno
     {
         var offsetX = 0  //Separar barras
         
@@ -325,7 +310,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
     }
     
-    func addNewFloor(name: String,xPosition : CGFloat)
+    private func addNewFloor(name: String,xPosition : CGFloat)
     {
         let f = SKSpriteNode(imageNamed: platform_file_name )
         f.xScale = 1
@@ -337,7 +322,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.addChild(f)
     }
     
-    func addNewCeil(name: String,xPosition : CGFloat)
+    private func addNewCeil(name: String,xPosition : CGFloat)
     {
         let c = SKSpriteNode(imageNamed: platform_file_name )
         c.xScale = 1
@@ -349,7 +334,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.addChild(c)
     }
     
-    func addNewVoid(name: String,xPosition : CGFloat, floor :Bool)
+    private func addNewVoid(name: String,xPosition : CGFloat, floor :Bool)
     {
         //Crear objeto
         var _void = SKSpriteNode(imageNamed: void_file_name)
@@ -379,7 +364,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.addChild(_void)
     }
     
-    func recycleCeil()
+    private func recycleCeil()
     {
         //Si ya no esta visible
         if let first = ceilBarArray.first, !intersects(_:first)
@@ -399,7 +384,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         }
     }
     
-    func recycleFloor()
+    private func recycleFloor()
     {
         if let first = floorBarArray.first, !intersects(_:first) //Si el primer elemento del suelo NO esta en pantalla (intersects)
         {
@@ -417,19 +402,20 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             }
         }
     }
+    
     public func switchGravity()
     {
         gravity = !gravity
     }
     
-    func moveScene()
+    private func moveScene()
     {
         //Mover todas las barras segun la velocidad
         self.enumerateChildNodes(withName: "Bar" + "*", using:
             {
                 (node, stop) -> Void in
-                node.position.x -= self.movement_speed
-        })
+                node.position.x -= self.coord.movement_speed
+            })
         
         recycleCeil()   //Pone Void o Piso segun coord
         recycleFloor()  //Pone Void o Piso segun coord

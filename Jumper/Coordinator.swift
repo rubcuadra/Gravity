@@ -24,9 +24,9 @@ class Coordinator
     var  ceil_production = [Bool](repeating: true, count: size)
     var floor_production = [Bool](repeating: true, count: size)
     
-    //Game Logic Flags
-    let topDifficulty : UInt32 = 90
-    var difficulty : UInt32 = 10
+    //MARK : Game Logic Flags
+    let topDifficulty : UInt32 = 90 //90 de 100 es la max probab
+    var difficulty : UInt32 = 10    //10 de 100 es la probab inicial
     
     let maxVoidsTogether = 3         //Max Voids
     var currentTopVoidsTogether = 0  //Control flag
@@ -34,9 +34,16 @@ class Coordinator
     
     //Variable temp que usaran las funciones next, mas eficiente que estar creando y borrando variables
     var temp = true
-    let cooldown = 2 //Poder checar arra[size-1] y array[size-2]
+    let cooldown = 2 //Poder checar array[index] y array[index-1]
     var lastTopDummies  = 0 //Esto se debe sumar 1 cada vez que insertamos un TRUE al final
     var lastLowDummies  = 0 //Esto se debe sumar 1 cada vez que insertamos un TRUE al final
+    
+    //MARK : Difficulty Vars
+    var difficulty_switch = true     //Nos dice si subir velocidad o probabilidad de un void
+    var movement_speed = CGFloat(4)         //InitialSpeed
+    var max_movement_speed = CGFloat(10)    //Max Speed
+    var increaseDifficultyInterval = 10     //Cada cuanto cambia la diffic in seconds
+    var increaseSpeedFactor = CGFloat(0.5)  //Se le sumara a movement_speed cada x seconds
     
     public func nextCeilIsVoid() -> Bool
     {
@@ -51,6 +58,7 @@ class Coordinator
         floor_production.append(true) ; lastLowDummies += 1
         return !temp
     }
+    
     public func increaseDifficulty()
     {
         if difficulty >= topDifficulty
@@ -119,23 +127,31 @@ class Coordinator
         }
         addTop(i: i + (leader ? 0 : 1), leader: !leader ) //Si es lider que le sume 1 el otro
     }
-    private func printProds()
-    {
-        for i in 0..<Coordinator.size
-        {
-            print("\(i) \(floor_production[i]) \(ceil_production[i])")
-        }
-    }
     
     private init() //Singleton
     {
         addTop(i: 1, leader : true) //Empieza llenando desde arribaa
         //addLow(i: 1, leader: true) //Empieza llenando desde arribaa
-        
-        //printProds()
     }
     
-    //MARK : RANDOM LOGIC
+    public func levelUp()
+    {
+        if difficulty_switch //Subir speed
+        {
+            if self.movement_speed < max_movement_speed
+            {
+                self.movement_speed += increaseSpeedFactor
+            }
+            print("MOVEMENT SPEED \(self.movement_speed)")
+        }
+        else                 //Subir Probabilidad
+        {
+            increaseDifficulty()
+            print ("DIFFICULTY \(difficulty)")
+        }
+        difficulty_switch = !difficulty_switch //1 velocidad, 1 probabilidad...
+    }
+    
     //Nos dira si deberiamos poner un void con base en la probabilidad
     private func randVoid() -> Bool
     {
