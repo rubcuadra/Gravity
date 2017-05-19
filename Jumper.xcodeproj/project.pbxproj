@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9F38B6811ECF66BF00A81553 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F38B6801ECF66BF00A81553 /* GameScene.swift */; };
 		9F6DC00A1EBEA73300C9007D /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6DC0091EBEA73300C9007D /* AppDelegate.swift */; };
 		9F6DC00C1EBEA73300C9007D /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6DC00B1EBEA73300C9007D /* ViewController.swift */; };
 		9F6DC00E1EBEA73300C9007D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9F6DC00D1EBEA73300C9007D /* Assets.xcassets */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		9F38B6801ECF66BF00A81553 /* GameScene.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
 		9F6DC0061EBEA73300C9007D /* Jumper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Jumper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9F6DC0091EBEA73300C9007D /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		9F6DC00B1EBEA73300C9007D /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -110,6 +112,7 @@
 				9F6DC0121EBEA73300C9007D /* Info.plist */,
 				9F6DC0341EBEAD2F00C9007D /* WindowController.swift */,
 				9FB109D51ECAA26500DB3EE7 /* Coordinator.swift */,
+				9F38B6801ECF66BF00A81553 /* GameScene.swift */,
 			);
 			path = Jumper;
 			sourceTree = "<group>";
@@ -273,6 +276,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9F38B6811ECF66BF00A81553 /* GameScene.swift in Sources */,
 				9FB109D61ECAA26500DB3EE7 /* Coordinator.swift in Sources */,
 				9F6DC00C1EBEA73300C9007D /* ViewController.swift in Sources */,
 				9F6DC0351EBEAD2F00C9007D /* WindowController.swift in Sources */,
