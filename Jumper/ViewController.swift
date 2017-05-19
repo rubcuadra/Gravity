@@ -10,7 +10,7 @@ import Cocoa
 
 class ViewController: NSViewController
 {
-
+    //TODO : DEFINIR PREFERENCES Y STUFF
     override func viewDidLoad()
     {
         super.viewDidLoad()
