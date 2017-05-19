@@ -46,29 +46,6 @@ class Coordinator
     var increaseDifficultyInterval = 10     //Cada cuanto cambia la diffic in seconds
     var increaseSpeedFactor = CGFloat(0.5)  //Se le sumara a movement_speed cada x seconds
     
-    public func nextCeilIsVoid() -> Bool
-    {
-        temp = ceil_production.removeFirst()
-        ceil_production.append(true) ; lastTopDummies += 1
-        return !temp
-    }
-    
-    public func nextFloorIsVoid() -> Bool
-    {
-        temp = floor_production.removeFirst()
-        floor_production.append(true) ; lastLowDummies += 1
-        return !temp
-    }
-    
-    public func increaseDifficulty()
-    {
-        if difficulty >= topDifficulty
-        {
-            return
-        }
-        difficulty += 10
-    }
-    
     //La idea es que esta funcion sea invocada despues de haber popeado ambos arrays
     //(Haber llamado tanto nextCeil como nextFloor)
     public func refill()
@@ -135,14 +112,36 @@ class Coordinator
         //addLow(i: 1, leader: true) //Empieza llenando desde arribaa
     }
     
+    //Nos dira si deberiamos poner un void con base en la probabilidad
+    private func randVoid() -> Bool
+    {
+        return arc4random_uniform(100)<=difficulty //X de 100, un 20%,30%... hasta 80??
+    }
+}
+extension Coordinator //NEXT is Void ?
+{
+    public func nextCeilIsVoid() -> Bool
+    {
+        temp = ceil_production.removeFirst()
+        ceil_production.append(true) ; lastTopDummies += 1
+        return !temp
+    }
+    
+    public func nextFloorIsVoid() -> Bool
+    {
+        temp = floor_production.removeFirst()
+        floor_production.append(true) ; lastLowDummies += 1
+        return !temp
+    }
+}
+
+extension Coordinator //Difficulty and levelUp
+{
     public func levelUp()
     {
         if difficulty_switch //Subir speed
         {
-            if self.movement_speed < max_movement_speed
-            {
-                self.movement_speed += increaseSpeedFactor
-            }
+            increaseSpeed()
             print("MOVEMENT SPEED \(self.movement_speed)")
         }
         else                 //Subir Probabilidad
@@ -153,9 +152,20 @@ class Coordinator
         difficulty_switch = !difficulty_switch //1 velocidad, 1 probabilidad...
     }
     
-    //Nos dira si deberiamos poner un void con base en la probabilidad
-    private func randVoid() -> Bool
+    private func increaseDifficulty()
     {
-        return arc4random_uniform(100)<=difficulty //X de 100, un 20%,30%... hasta 80??
+        if difficulty >= topDifficulty
+        {
+            return
+        }
+        difficulty += 10
+    }
+    
+    private func increaseSpeed()
+    {
+        if self.movement_speed < max_movement_speed
+        {
+            self.movement_speed += increaseSpeedFactor
+        }
     }
 }

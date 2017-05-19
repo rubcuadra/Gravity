@@ -193,7 +193,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         //SI no se ha pausado el juego o no ha terminado
         if (!self.gameOver ||  !self.view!.scene!.isPaused )
         {
-            coord.increaseDifficulty()
+            coord.levelUp()
         }
         else
         {
