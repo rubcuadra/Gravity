@@ -20,7 +20,6 @@ struct gamePhysics
 //TODO : ANIMAR EL SALTO
 //TODO : DEFINIR SPRITES
 //TODO : MUSICA
-//TODO : SUELO QUE SE DESTRUYE
 
 class GameScene: SKScene, SKPhysicsContactDelegate
 {
@@ -28,7 +27,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var timer = Timer()
     //Sizes - Coords
     let touchbarHeight = 60
-    let touchbarWidth = 1024
+    let touchbarWidth = 720
     var barWidth : CGFloat  = 0             //Se llenan en el init de borders
     var voidWidth : CGFloat = 0             //Se llenan en el init de borders
     var voidBounding : CGSize = CGSize()    //Bounding Box para fisica
@@ -51,8 +50,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     //Game Flags/Logic
     var coord = Coordinator.instance
-    var topRemoval = 0 //Cuantas celdas se deben remover arriba
-    var lowRemoval = 0 //Cuantas celdas se deben remover abajo
+    let removedPerCrash = 4 //Se suma al top/low removal para quitar X celdas cada choque
+    var topRemoval = 0      //Cuantas celdas se deben remover arriba
+    var lowRemoval = 0      //Cuantas celdas se deben remover abajo
     var gravity = true
     var gameOver = false         //Juego acabo
     
@@ -85,6 +85,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func GameOver()
     {
         self.view?.scene?.isPaused = true
+        timer.invalidate()
         gameOver = true
         //sirenAudio.stop()
         //blinky.removeFromParent()
@@ -154,7 +155,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         PlayerD = SKSpriteNode(texture: deathFrames[0])
         
         PlayerD.position.x = self.Player.position.x
-        PlayerD.position.y = self.Player.position.y - 2
+        PlayerD.position.y = 15 //Prueba, que muera en el centro?
         
         Player.removeAction(forKey: "PlayerRun")
         Player.texture = SKTexture(imageNamed: "Player3")
@@ -211,9 +212,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         if (firstBody.categoryBitMask == gamePhysics.Player) && (secondBody.categoryBitMask == gamePhysics.Void)
         {
-            topRemoval += 2 //11 choques empiezan a reducir la barra
-            lowRemoval += 2
-            print("Chocaron")
+            topRemoval += removedPerCrash //11 choques empiezan a reducir la barra
+            lowRemoval += removedPerCrash
+            
+            if(ceilBarArray.count < 8)
+            {
+                GameOver()
+            }
         }
         
     }
@@ -276,26 +281,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         // Scheduling timer to Call the function **increaseSpeedInterval** with the interval
         timer = Timer.scheduledTimer(timeInterval: TimeInterval(coord.increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)
-    }
-    
-    private func checkGravity()
-    {
-        if gravity //Gravedad normal
-        {
-            if Player.yScale < 0 //Esta de cabeza
-            {
-                Player.yScale *= -1              //Poner de pie
-                Player.position.y = player_floor_pos //Pegar al suelo
-            }
-        }
-        else    //Gravedad Invertida
-        {
-            if Player.yScale > 0 //Esta de pie
-            {
-                Player.yScale *= -1 //Voltear de cabeza
-                Player.position.y = player_ceil_pos //Pegar al techo
-            }
-        }
     }
     
     private func initializeBorders() //Todo estara lleno
@@ -428,6 +413,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     public func switchGravity()
     {
         gravity = !gravity
+        if gravity //Gravedad normal
+        {
+            if Player.yScale < 0 //Esta de cabeza
+            {
+                Player.yScale *= -1              //Poner de pie
+                Player.position.y = player_floor_pos //Pegar al suelo
+            }
+        }
+        else    //Gravedad Invertida
+        {
+            if Player.yScale > 0 //Esta de pie
+            {
+                Player.yScale *= -1 //Voltear de cabeza
+                Player.position.y = player_ceil_pos //Pegar al techo
+            }
+        }
     }
     
     private func moveScene()
@@ -448,7 +449,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     override func update(_ currentTime: TimeInterval)
     {
         moveScene()
-        checkGravity()
         
         if false  //GANAMOS
         {
