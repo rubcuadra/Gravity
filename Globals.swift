@@ -8,5 +8,4 @@
 
 import Foundation
 
-let jumpNotification = Notification.Name("CG")          //ChageGravity
-let togglePauseNotification = Notification.Name("TP")     //StartGame
+let gameScene = GameScene() //Aqui esta el juego

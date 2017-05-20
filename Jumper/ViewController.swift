@@ -10,10 +10,13 @@ import Cocoa
 
 class ViewController: NSViewController
 {
+    var isPaused = true
+    
+    @IBOutlet weak var togglePlayButton: NSButton!
+    
     @IBAction func startClick(_ sender: NSButton)
     {
-        NotificationCenter.default.post(name: togglePauseNotification,
-                                        object: nil)
+        gameScene.togglePause()
     }
     
     //TODO : DEFINIR PREFERENCES Y STUFF

@@ -58,7 +58,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     var barIsWhite: Bool = false //Flash
     
-    func createSprite(texture: [SKTexture], height: Int, width: Int, xPos: Int, yPos: Int, node: inout SKSpriteNode!, catBitMask: UInt32, conTestBitMask: [UInt32])
+    private func createSprite(texture: [SKTexture], height: Int, width: Int, xPos: Int, yPos: Int, node: inout SKSpriteNode!, catBitMask: UInt32, conTestBitMask: [UInt32])
     {
         node = SKSpriteNode(texture: texture[0])
         node.size.height = CGFloat(height)
@@ -73,7 +73,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.addChild(node)
     }
     
-    func removeBars()
+    private func removeBars()
     {
         self.enumerateChildNodes(withName: "Bar" + "*", using:
             {
@@ -82,18 +82,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         })
     }
     
-    func GameOver()
+    private func GameOver()
     {
         self.view?.scene?.isPaused = true
-        timer.invalidate()
-        gameOver = true
+        timer.invalidate()  //Deje de intentar subir dificultad
+        gameOver = true     //GameOver
         //sirenAudio.stop()
         //blinky.removeFromParent()
         //self.removeDots()
         DeathFrames()
     }
     
-    func flashBars()
+    private  func flashBars()
     {
         func isWhite() -> String
         {
@@ -132,7 +132,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         barIsWhite = !barIsWhite
     }
     
-    func flashAfterDelay(delay: Double)
+    private func flashAfterDelay(delay: Double)
     {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delay)
         {
@@ -140,7 +140,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         }
     }
     
-    func DeathFrames()
+    private func DeathFrames()
     {
         var PlayerD: SKSpriteNode!
         let DeathAtlas = SKTextureAtlas(named: "PlayerD")
@@ -186,6 +186,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 }
                 PlayerD.run(SKAction.animate(with: deathFrames, timePerFrame: 0.1, resize: false, restore: true), withKey: "GameOver")
             }
+            
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.3)
             {
                 self.view?.scene?.isPaused = true
@@ -223,7 +224,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
     }
     
-    func getPlayerFrames() -> [SKTexture]
+    private func getPlayerFrames() -> [SKTexture]
     {
         let PlayerAtlas = SKTextureAtlas(named: "Player")
         var moveFrames = [SKTexture]()
@@ -240,17 +241,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.view?.scene?.isPaused = !self.view!.scene!.isPaused
     }
     
-    func subscribeNotifications()
-    {
-        NotificationCenter.default.addObserver(self, selector: #selector( switchGravity ),
-                                               name: jumpNotification,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector( togglePause ),
-                                               name: togglePauseNotification,
-                                               object: nil)
-    }
-    func resetGame()
+    private func resetGame()
     {
         initializeBorders()
         createSprite(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player, catBitMask: gamePhysics.Player,
@@ -259,12 +250,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "PlayerRun")
         scheduledTimerWithTimeInterval()
     }
+    
     //Initialise the game
     override func didMove(to view: SKView)
     {
         super.didMove(to: view)
         
-        subscribeNotifications()
         self.view?.scene?.isPaused = true
         physicsWorld.contactDelegate = self
         self.scaleMode = .resizeFill
@@ -276,7 +267,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.view?.scene?.isPaused = false
     }
     
-    func scheduledTimerWithTimeInterval()
+    private func scheduledTimerWithTimeInterval()
     {
         // Scheduling timer to Call the function **increaseSpeedInterval** with the interval
         timer = Timer.scheduledTimer(timeInterval: TimeInterval(coord.increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)

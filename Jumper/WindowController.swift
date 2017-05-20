@@ -46,8 +46,7 @@ class WindowController: NSWindowController
         switch event.keyCode
         {
             case 49:    //spaceBar
-                NotificationCenter.default.post(name: jumpNotification,
-                                                object: nil)
+                gameScene.switchGravity()
                 break
             default:
                 break
@@ -64,14 +63,13 @@ extension WindowController: NSTouchBarDelegate
         switch identifier
         {
             case NSTouchBarItemIdentifier.customView:
-                let scene = GameScene() //Aqui esta el juego
                 let gameView = SKView()
                 let item = NSCustomTouchBarItem(identifier: identifier)
                 item.view = gameView
                 item.view.allowedTouchTypes = NSTouchTypeMask.direct
                 item.view.acceptsTouchEvents = true
                 //item.view.gestureRecognizers.append(NSGestureRecognizer.init())
-                gameView.presentScene(scene)
+                gameView.presentScene(gameScene)
 
                 return item
                 
