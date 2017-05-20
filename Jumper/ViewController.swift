@@ -10,6 +10,12 @@ import Cocoa
 
 class ViewController: NSViewController
 {
+    @IBAction func startClick(_ sender: NSButton)
+    {
+        NotificationCenter.default.post(name: togglePauseNotification,
+                                        object: nil)
+    }
+    
     //TODO : DEFINIR PREFERENCES Y STUFF
     override func viewDidLoad()
     {

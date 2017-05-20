@@ -195,13 +195,13 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func increaseDifficulty()
     {
         //SI no se ha pausado el juego o no ha terminado
-        if (!self.gameOver ||  !self.view!.scene!.isPaused )
+        if (self.gameOver || self.view!.scene!.isPaused)
         {
-            coord.levelUp()
+            print("GAME OVER o PAUSED")
         }
         else
         {
-            print("GAME OVER o PAUSED")
+            coord.levelUp()
         }
     }
     
@@ -235,46 +235,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         return moveFrames
     }
     
+    func togglePause()
+    {
+        self.view?.scene?.isPaused = !self.view!.scene!.isPaused
+    }
+    
+    func subscribeNotifications()
+    {
+        NotificationCenter.default.addObserver(self, selector: #selector( switchGravity ),
+                                               name: jumpNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector( togglePause ),
+                                               name: togglePauseNotification,
+                                               object: nil)
+    }
+    func resetGame()
+    {
+        initializeBorders()
+        createSprite(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player, catBitMask: gamePhysics.Player,
+                     conTestBitMask:[gamePhysics.Void])
+        Player.texture = PlayerFrames[2]
+        self.Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "PlayerRun")
+        scheduledTimerWithTimeInterval()
+    }
     //Initialise the game
     override func didMove(to view: SKView)
     {
         super.didMove(to: view)
         
-        NotificationCenter.default.addObserver(self, selector: #selector( switchGravity ),
-                                                 name: jumpNotification,
-                                                 object: nil) //Name viene del windowController
-        
+        subscribeNotifications()
         self.view?.scene?.isPaused = true
         physicsWorld.contactDelegate = self
-        do
-        {
-            //            eatAudio = try AVAudioPlayer(contentsOf: eat1 as URL)
-            //            sirenAudio = try AVAudioPlayer(contentsOf: sirenS as URL)
-            //            miscAudio = try AVAudioPlayer(contentsOf: intro as URL)
-        } catch
-        {
-            print("Could not update audio - eat1, sirenS, intro")
-        }
-        
-        initializeBorders()
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
-        
         PlayerFrames = getPlayerFrames()
         
-        createSprite(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player, catBitMask: gamePhysics.Player,
-                     conTestBitMask:[gamePhysics.Void])
+        resetGame()
         
-        Player.texture = PlayerFrames[2]
-        
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() ) //+ 4.5 //Start game
-        {
-            
-            self.Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "PlayerRun")
-            
-            self.view?.scene?.isPaused = false
-        }
-        scheduledTimerWithTimeInterval()
+        self.view?.scene?.isPaused = false
     }
     
     func scheduledTimerWithTimeInterval()
@@ -412,6 +411,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     public func switchGravity()
     {
+        //SOLO SI NO ESTA PAUSADA LA SCENE
+        if (self.view?.scene?.isPaused)!{return}
+        
         gravity = !gravity
         if gravity //Gravedad normal
         {

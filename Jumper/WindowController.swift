@@ -10,8 +10,6 @@ import Foundation
 import GameplayKit
 import AVFoundation
 
-let jumpNotification = Notification.Name("CG") //ChageGravity
-
 fileprivate extension NSTouchBarCustomizationIdentifier
 {
     static let customTouchBar = NSTouchBarCustomizationIdentifier("com.RubCuadra.touchbar.customTouchBar")

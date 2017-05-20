@@ -16,6 +16,7 @@
 		9F6DC0271EBEA73300C9007D /* JumperUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6DC0261EBEA73300C9007D /* JumperUITests.swift */; };
 		9F6DC0351EBEAD2F00C9007D /* WindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9F6DC0341EBEAD2F00C9007D /* WindowController.swift */; };
 		9F6DC03A1EBEADD100C9007D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9F6DC0391EBEADD100C9007D /* AVFoundation.framework */; };
+		9FAD4C761ED1002200C01C21 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FAD4C751ED1002200C01C21 /* Globals.swift */; };
 		9FB109D61ECAA26500DB3EE7 /* Coordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB109D51ECAA26500DB3EE7 /* Coordinator.swift */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +53,7 @@
 		9F6DC0281EBEA73300C9007D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9F6DC0341EBEAD2F00C9007D /* WindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowController.swift; sourceTree = "<group>"; };
 		9F6DC0391EBEADD100C9007D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		9FAD4C751ED1002200C01C21 /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Globals.swift; path = ../Globals.swift; sourceTree = "<group>"; };
 		9FB109D51ECAA26500DB3EE7 /* Coordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Coordinator.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -105,6 +107,7 @@
 		9F6DC0081EBEA73300C9007D /* Jumper */ = {
 			isa = PBXGroup;
 			children = (
+				9FAD4C751ED1002200C01C21 /* Globals.swift */,
 				9F6DC0091EBEA73300C9007D /* AppDelegate.swift */,
 				9F6DC00B1EBEA73300C9007D /* ViewController.swift */,
 				9F6DC00D1EBEA73300C9007D /* Assets.xcassets */,
@@ -276,6 +279,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9FAD4C761ED1002200C01C21 /* Globals.swift in Sources */,
 				9F38B6811ECF66BF00A81553 /* GameScene.swift in Sources */,
 				9FB109D61ECAA26500DB3EE7 /* Coordinator.swift in Sources */,
 				9F6DC00C1EBEA73300C9007D /* ViewController.swift in Sources */,
