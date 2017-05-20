@@ -50,8 +50,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var PlayerFrames: [SKTexture]!
     
     //Game Flags/Logic
-    var gravity = true
     var coord = Coordinator.instance
+    var topRemoval = 0 //Cuantas celdas se deben remover arriba
+    var lowRemoval = 0 //Cuantas celdas se deben remover abajo
+    var gravity = true
     var gameOver = false         //Juego acabo
     
     var barIsWhite: Bool = false //Flash
@@ -209,6 +211,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         if (firstBody.categoryBitMask == gamePhysics.Player) && (secondBody.categoryBitMask == gamePhysics.Void)
         {
+            topRemoval += 2 //11 choques empiezan a reducir la barra
+            lowRemoval += 2
             print("Chocaron")
         }
         
@@ -375,14 +379,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             ceilBarArray.removeFirst()
             first.removeFromParent()
             
-            if coord.nextCeilIsVoid()
+            if topRemoval == 0 //NO debemos remover ninguno
             {
-                addNewVoid(name: first.name!, xPosition: last.position.x + voidWidth, floor: false)
+                if coord.nextCeilIsVoid()
+                {
+                    addNewVoid(name: first.name!, xPosition: last.position.x + voidWidth, floor: false)
+                }
+                else
+                {
+                    addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
+                }
             }
             else
             {
-                addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
+                topRemoval -= 1 //Ya se quito 1 elemento del array
             }
+            
         }
     }
     
@@ -394,14 +406,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             floorBarArray.removeFirst()
             first.removeFromParent()
             
-            if coord.nextFloorIsVoid()
+            if lowRemoval == 0 //NO debemos remover ninguno
             {
-                addNewVoid(name: first.name!, xPosition: last.position.x + last.size.width, floor: true)
+                if coord.nextFloorIsVoid()
+                {
+                    addNewVoid(name: first.name!, xPosition: last.position.x + last.size.width, floor: true)
+                }
+                else
+                {
+                    addNewFloor(name: first.name!,  xPosition: last.position.x + last.size.width )
+                }
             }
             else
             {
-                addNewFloor(name: first.name!,  xPosition: last.position.x + last.size.width )
+                lowRemoval -= 1 //Ya se quito 1 elemento del array
             }
+            
         }
     }
     
