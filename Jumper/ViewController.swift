@@ -17,12 +17,17 @@ class ViewController: NSViewController
         gameScene.togglePause()
         togglePlayButton.title = gameScene.isPaused ? "CONTINUE" : "PAUSE"
     }
-    
+    func gameOver()
+    {
+        print("GAME OVER DESDE WINDOW ")
+    }
     //TODO : DEFINIR PREFERENCES Y STUFF
     override func viewDidLoad()
     {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector:
+            #selector( gameOver ),name: gameOverNotification,object: nil)
         //self.view.wantsLayer = true
         //self.view.layer?.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         //let font: NSFont = .systemFont(ofSize: 30)

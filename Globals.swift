@@ -8,4 +8,5 @@
 
 import Foundation
 
+let gameOverNotification = Notification.Name("GO")
 let gameScene = GameScene() //Aqui esta el juego

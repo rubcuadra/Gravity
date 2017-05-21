@@ -54,7 +54,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var topRemoval = 0      //Cuantas celdas se deben remover arriba
     var lowRemoval = 0      //Cuantas celdas se deben remover abajo
     var gravity = true
-    var gameOver = false         //Juego acabo
     
     var barIsWhite: Bool = false //Flash
     
@@ -86,7 +85,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         self.view?.scene?.isPaused = true
         timer.invalidate()  //Deje de intentar subir dificultad
-        gameOver = true     //GameOver
+        NotificationCenter.default.post(name: gameOverNotification, object: nil)
+        
         //sirenAudio.stop()
         //blinky.removeFromParent()
         //self.removeDots()
@@ -196,9 +196,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     func increaseDifficulty()
     {
         //SI no se ha pausado el juego o no ha terminado
-        if (self.gameOver || self.view!.scene!.isPaused)
+        if (self.view!.scene!.isPaused)
         {
-            print("GAME OVER o PAUSED")
+            print("PAUSED")
         }
         else
         {
