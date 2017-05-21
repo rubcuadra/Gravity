@@ -256,15 +256,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         super.didMove(to: view)
         
-        self.view?.scene?.isPaused = true
+        self.view?.scene?.isPaused = true //Se inicializa pero en Pausa
         physicsWorld.contactDelegate = self
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
         PlayerFrames = getPlayerFrames()
-        
         resetGame()
-        
-        self.view?.scene?.isPaused = false
     }
     
     private func scheduledTimerWithTimeInterval()

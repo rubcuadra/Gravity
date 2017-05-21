@@ -27,7 +27,8 @@ class Coordinator
     //MARK : Game Logic
     var score: UInt = 0
     let topDifficulty : UInt32 = 90 //90 de 100 es la max probab
-    var difficulty : UInt32 = 10    //10 de 100 es la probab inicial
+    let initialDifficulty : UInt32 = 10 //10 de 100 es la probab inicial
+    var difficulty : UInt32 = 0
     
     let maxVoidsTogether = 3         //Max Voids
     var currentTopVoidsTogether = 0  //Control flag
@@ -41,8 +42,9 @@ class Coordinator
     
     //MARK : Difficulty Vars
     var difficulty_switch = true     //Nos dice si subir velocidad o probabilidad de un void
-    var movement_speed = CGFloat(4)         //InitialSpeed
-    var max_movement_speed = CGFloat(10)    //Max Speed
+    let max_movement_speed = CGFloat(10)    //Max Speed
+    let init_movement_speed = CGFloat(4)    //Max Speed
+    var movement_speed = CGFloat(0)         //InitialSpeed
     var increaseDifficultyInterval = 10     //Cada cuanto cambia la diffic in seconds
     var increaseSpeedFactor = CGFloat(0.5)  //Se le sumara a movement_speed cada x seconds
     
@@ -106,10 +108,42 @@ class Coordinator
         addTop(i: i + (leader ? 0 : 1), leader: !leader ) //Si es lider que le sume 1 el otro
     }
     
+    //Pone los arreglos en trues
+    func resetArrays()
+    {
+        for i in 0..<Coordinator.size
+        {
+            ceil_production[i] = true
+            floor_production[i] = true
+        }
+        currentTopVoidsTogether = 0
+        currentLowVoidsTogether = 0
+        lastTopDummies = 0
+        lastLowDummies = 0
+    }
+    
+    func start()
+    {
+        score = 0
+        difficulty_switch = true
+        movement_speed = init_movement_speed
+        difficulty = initialDifficulty
+        resetArrays()
+        
+        if arc4random_uniform(2)==0
+        {
+            addTop(i: 1, leader : true) //Empieza llenando desde arribaa
+        }
+        else
+        {
+            addLow(i: 1, leader: true) //Empieza llenando desde arribaa
+        }
+        
+    }
+    
     private init() //Singleton
     {
-        addTop(i: 1, leader : true) //Empieza llenando desde arribaa
-        //addLow(i: 1, leader: true) //Empieza llenando desde arribaa
+        start()
     }
     
     //Nos dira si deberiamos poner un void con base en la probabilidad

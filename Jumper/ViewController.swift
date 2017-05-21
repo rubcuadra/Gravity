@@ -10,19 +10,19 @@ import Cocoa
 
 class ViewController: NSViewController
 {
-    var isPaused = true
-    
     @IBOutlet weak var togglePlayButton: NSButton!
     
     @IBAction func startClick(_ sender: NSButton)
     {
         gameScene.togglePause()
+        togglePlayButton.title = gameScene.isPaused ? "CONTINUE" : "PAUSE"
     }
     
     //TODO : DEFINIR PREFERENCES Y STUFF
     override func viewDidLoad()
     {
         super.viewDidLoad()
+        
         //self.view.wantsLayer = true
         //self.view.layer?.backgroundColor = CGColor(red: 0, green: 0, blue: 0, alpha: 1.0)
         //let font: NSFont = .systemFont(ofSize: 30)
