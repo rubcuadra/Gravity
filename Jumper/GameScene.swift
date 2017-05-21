@@ -24,7 +24,7 @@ struct gamePhysics
 class GameScene: SKScene, SKPhysicsContactDelegate
 {
     //Hilo de funciones cada x segundos
-    var timer = Timer()
+    var gameTimer = GameTimer()
     //Sizes - Coords
     let touchbarHeight = 60
     let touchbarWidth = 720
@@ -78,18 +78,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             {
                 (node, stop) -> Void in
                 node.removeFromParent()
-        })
+            })
+        ceilBarArray.removeAll()
+        floorBarArray.removeAll()
     }
     
     private func GameOver()
     {
         self.view?.scene?.isPaused = true
-        timer.invalidate()  //Deje de intentar subir dificultad
+        
+        removeBars()        //Remover las barras que queden
+        gameTimer.resetTimer()
         NotificationCenter.default.post(name: gameOverNotification, object: nil)
         
         //sirenAudio.stop()
-        //blinky.removeFromParent()
-        //self.removeDots()
+        
         DeathFrames()
     }
     
@@ -213,6 +216,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         if (firstBody.categoryBitMask == gamePhysics.Player) && (secondBody.categoryBitMask == gamePhysics.Void)
         {
+            print("CHOCARON")
+            
             topRemoval += removedPerCrash //11 choques empiezan a reducir la barra
             lowRemoval += removedPerCrash
             
@@ -238,6 +243,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func togglePause()
     {
+        if self.view!.scene!.isPaused
+        {
+            gameTimer.startTimer()
+        }
+        else
+        {
+            gameTimer.stopTimer()
+        }
         self.view?.scene?.isPaused = !self.view!.scene!.isPaused
     }
     
@@ -259,6 +272,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         self.view?.scene?.isPaused = true //Se inicializa pero en Pausa
         physicsWorld.contactDelegate = self
+        gameTimer.delegate = self
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
         PlayerFrames = getPlayerFrames()
@@ -268,7 +282,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     private func scheduledTimerWithTimeInterval()
     {
         // Scheduling timer to Call the function **increaseSpeedInterval** with the interval
-        timer = Timer.scheduledTimer(timeInterval: TimeInterval(coord.increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)
+        //        timer = Timer.scheduledTimer(timeInterval: TimeInterval(coord.increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)
     }
     
     private func initializeBorders() //Todo estara lleno
@@ -481,5 +495,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 }
             }
         }
+    }
+}
+
+extension GameScene: GameTimerProtocol
+{
+    
+    func currentTime(_ timer: GameTimer, cTime: TimeInterval)
+    {
+        let currentMinutes = floor(cTime / 60)
+        let currentSeconds = Int(cTime) % 60
+        print("\(currentMinutes) : \(currentSeconds)")
     }
 }

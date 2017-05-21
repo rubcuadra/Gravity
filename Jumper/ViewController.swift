@@ -47,11 +47,6 @@ class ViewController: NSViewController
         // Do any additional setup after loading the view.
     }
     
-    public func updateLabel(Score: Int)
-    {
-        //label.stringValue = String(describing: Score)
-    }
-    
     override var representedObject: Any?
     {
             didSet
