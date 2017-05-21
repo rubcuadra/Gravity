@@ -143,7 +143,7 @@ class Coordinator
     
     private init() //Singleton
     {
-        start()
+        //start()
     }
     
     //Nos dira si deberiamos poner un void con base en la probabilidad

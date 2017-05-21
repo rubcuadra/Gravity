@@ -241,9 +241,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.view?.scene?.isPaused = !self.view!.scene!.isPaused
     }
     
-    private func resetGame()
+    func resetGame()
     {
         initializeBorders()
+        coord.start()
         createSprite(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player, catBitMask: gamePhysics.Player,
                      conTestBitMask:[gamePhysics.Void])
         Player.texture = PlayerFrames[2]

@@ -10,16 +10,29 @@ import Cocoa
 
 class ViewController: NSViewController
 {
+    var restart = false
+    
     @IBOutlet weak var togglePlayButton: NSButton!
     
     @IBAction func startClick(_ sender: NSButton)
     {
-        gameScene.togglePause()
-        togglePlayButton.title = gameScene.isPaused ? "CONTINUE" : "PAUSE"
+        if restart
+        {
+            gameScene.resetGame()
+            gameScene.togglePause()
+            restart = false
+            togglePlayButton.title = "PAUSE"
+        }
+        else
+        {
+            gameScene.togglePause()
+            togglePlayButton.title = gameScene.isPaused ? "CONTINUE" : "PAUSE"
+        }
     }
     func gameOver()
     {
-        print("GAME OVER DESDE WINDOW ")
+        togglePlayButton.title = "RESTART"
+        restart = true
     }
     //TODO : DEFINIR PREFERENCES Y STUFF
     override func viewDidLoad()

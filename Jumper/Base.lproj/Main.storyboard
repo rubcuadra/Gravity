@@ -688,7 +688,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                         <subviews>
                             <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Kwl-k0-HOz">
-                                <rect key="frame" x="156" y="107" width="122" height="32"/>
+                                <rect key="frame" x="155" y="107" width="122" height="32"/>
                                 <buttonCell key="cell" type="push" title="START GAME" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="BXo-5b-H2X">
                                     <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                                     <font key="font" metaFont="system"/>
@@ -719,7 +719,7 @@
                 </viewController>
                 <customObject id="rPt-NT-nkU" userLabel="First Responder" customClass="NSResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-14" y="636.5"/>
+            <point key="canvasLocation" x="-10" y="701"/>
         </scene>
     </scenes>
 </document>
