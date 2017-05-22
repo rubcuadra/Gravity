@@ -15,6 +15,10 @@ protocol GameTimerProtocol
 
 class GameTimer
 {
+    //Singleton
+    static let instance = GameTimer()
+    private init(){}
+
     var delegate: GameTimerProtocol?
     var timer: Timer? = nil
     var startTime: Date?

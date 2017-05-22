@@ -24,7 +24,7 @@ struct gamePhysics
 class GameScene: SKScene, SKPhysicsContactDelegate
 {
     //Hilo de funciones cada x segundos
-    var gameTimer = GameTimer()
+    var gameTimer = GameTimer.instance
     //Sizes - Coords
     let touchbarHeight = 60
     let touchbarWidth = 720
@@ -86,13 +86,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     private func GameOver()
     {
         self.view?.scene?.isPaused = true
-        
-        removeBars()        //Remover las barras que queden
+        removeBars()                //Remover las barras que queden
         gameTimer.resetTimer()
         NotificationCenter.default.post(name: gameOverNotification, object: nil)
-        
         //sirenAudio.stop()
-        
         DeathFrames()
     }
     
@@ -196,19 +193,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             }
         }
     }
-    func increaseDifficulty()
-    {
-        //SI no se ha pausado el juego o no ha terminado
-        if (self.view!.scene!.isPaused)
-        {
-            print("PAUSED")
-        }
-        else
-        {
-            coord.levelUp()
-        }
-    }
-    
+
     func didBegin(_ contact: SKPhysicsContact)
     {
         let firstBody: SKPhysicsBody = contact.bodyA
@@ -243,14 +228,24 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     func togglePause()
     {
-        if self.view!.scene!.isPaused
+        if self.view!.scene!.isPaused //Si esta en pausa, la reanudaremos
         {
-            gameTimer.startTimer()
+            if gameTimer.isPaused //Si esta pausado RESUME
+            {
+                gameTimer.resumeTimer()
+            }
+            else                  //De otra forma iniciar en 0
+            {
+                gameTimer.startTimer()
+            }
         }
-        else
+        else  //Si no estamos en pause es que lo estaremos, pausar timer
         {
             gameTimer.stopTimer()
         }
+        
+        
+        
         self.view?.scene?.isPaused = !self.view!.scene!.isPaused
     }
     
@@ -500,11 +495,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate
 
 extension GameScene: GameTimerProtocol
 {
-    
+    //MARK: GAME TIME PROTOCOL
     func currentTime(_ timer: GameTimer, cTime: TimeInterval)
     {
-        let currentMinutes = floor(cTime / 60)
-        let currentSeconds = Int(cTime) % 60
-        print("\(currentMinutes) : \(currentSeconds)")
+        //cTime son todos los segundos que han pasado
+        if Int(cTime) % coord.increaseDifficultyInterval == 0
+        {
+            coord.levelUp()
+            print("Level UP \( Int(cTime) )s")
+        }
     }
 }

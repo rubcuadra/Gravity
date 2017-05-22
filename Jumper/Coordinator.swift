@@ -25,9 +25,9 @@ class Coordinator
     var floor_production = [Bool](repeating: true, count: size)
     
     //MARK : Game Logic
-    var score: UInt = 0
     let topDifficulty : UInt32 = 90 //90 de 100 es la max probab
-    let initialDifficulty : UInt32 = 10 //10 de 100 es la probab inicial
+    let initialDifficulty : UInt32 = 5 //10 de 100 es la probab inicial
+    let increaseDifficultyFactor : UInt32 = 10
     var difficulty : UInt32 = 0
     
     let maxVoidsTogether = 3         //Max Voids
@@ -43,9 +43,9 @@ class Coordinator
     //MARK : Difficulty Vars
     var difficulty_switch = true     //Nos dice si subir velocidad o probabilidad de un void
     let max_movement_speed = CGFloat(10)    //Max Speed
-    let init_movement_speed = CGFloat(4)    //Max Speed
-    var movement_speed = CGFloat(0)         //InitialSpeed
-    var increaseDifficultyInterval = 10     //Cada cuanto cambia la diffic in seconds
+    let init_movement_speed = CGFloat(3.5)  //Init Speed
+    var movement_speed = CGFloat(0)         //Speed que se modifica
+    var increaseDifficultyInterval = 30     //Cada cuanto cambia la diffic in seconds
     var increaseSpeedFactor = CGFloat(0.5)  //Se le sumara a movement_speed cada x seconds
     
     //La idea es que esta funcion sea invocada despues de haber popeado ambos arrays
@@ -124,7 +124,6 @@ class Coordinator
     
     func start()
     {
-        score = 0
         difficulty_switch = true
         movement_speed = init_movement_speed
         difficulty = initialDifficulty
@@ -141,10 +140,7 @@ class Coordinator
         
     }
     
-    private init() //Singleton
-    {
-        //start()
-    }
+    private init(){} //Singleton
     
     //Nos dira si deberiamos poner un void con base en la probabilidad
     private func randVoid() -> Bool
@@ -192,7 +188,7 @@ extension Coordinator //Difficulty and levelUp
         {
             return
         }
-        difficulty += 10
+        difficulty += increaseDifficultyFactor
     }
     
     private func increaseSpeed()
