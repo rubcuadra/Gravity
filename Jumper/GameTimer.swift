@@ -17,13 +17,13 @@ class GameTimer
 {
     //Singleton
     static let instance = GameTimer()
+    
     private init(){}
 
     private var subscribers = [GameTimerProtocol]() //Delegates
     
     var timer: Timer? = nil
     var startTime: Date?
-    //var duration: TimeInterval = 360      // default = 6 minutes
     var elapsedTime: TimeInterval = 0
     
     var isStopped: Bool
@@ -79,7 +79,6 @@ class GameTimer
         timer = nil
         
         startTime = nil
-        //duration = 360
         elapsedTime = 0
         
         timerAction()
