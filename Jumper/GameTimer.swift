@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol GameTimerProtocol
+protocol GameTimerProtocol : class
 {
     func currentTime(_ timer: GameTimer, cTime: TimeInterval)
 }
@@ -19,7 +19,8 @@ class GameTimer
     static let instance = GameTimer()
     private init(){}
 
-    var delegate: GameTimerProtocol?
+    private var subscribers = [GameTimerProtocol]() //Delegates
+    
     var timer: Timer? = nil
     var startTime: Date?
     //var duration: TimeInterval = 360      // default = 6 minutes
@@ -84,6 +85,16 @@ class GameTimer
         timerAction()
     }
     
+    func unsuscribe(delegate: GameTimerProtocol)
+    {
+        subscribers = subscribers.filter() { $0 !== delegate }
+        print(subscribers.count)
+    }
+    
+    func subscribe(delegate: GameTimerProtocol )
+    {
+        subscribers.append(delegate)
+    }
     
     dynamic func timerAction()
     {
@@ -96,7 +107,10 @@ class GameTimer
         //startTime is earlier than now, so timeIntervalSinceNow produces a negative value.
         elapsedTime = -startTime.timeIntervalSinceNow
         
-        delegate?.currentTime(self, cTime: elapsedTime)
+        for s in subscribers //Avisarle a los que suscribieron
+        {
+            s.currentTime(self, cTime: elapsedTime)
+        }
     }
 }
 

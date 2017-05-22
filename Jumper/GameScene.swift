@@ -257,7 +257,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                      conTestBitMask:[gamePhysics.Void])
         Player.texture = PlayerFrames[2]
         self.Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "PlayerRun")
-        scheduledTimerWithTimeInterval()
     }
     
     //Initialise the game
@@ -267,17 +266,11 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         self.view?.scene?.isPaused = true //Se inicializa pero en Pausa
         physicsWorld.contactDelegate = self
-        gameTimer.delegate = self
+        gameTimer.subscribe(delegate: self)
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
         PlayerFrames = getPlayerFrames()
         resetGame()
-    }
-    
-    private func scheduledTimerWithTimeInterval()
-    {
-        // Scheduling timer to Call the function **increaseSpeedInterval** with the interval
-        //        timer = Timer.scheduledTimer(timeInterval: TimeInterval(coord.increaseDifficultyInterval), target: self, selector: #selector(self.increaseDifficulty), userInfo: nil, repeats: true)
     }
     
     private func initializeBorders() //Todo estara lleno

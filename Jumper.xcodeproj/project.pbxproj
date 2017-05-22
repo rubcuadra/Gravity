@@ -151,10 +151,18 @@
 		9F6E07D51ED255B3004CF435 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				9F6E07D81ED2B042004CF435 /* Control */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		9F6E07D81ED2B042004CF435 /* Control */ = {
+			isa = PBXGroup;
+			children = (
 				9FB109D51ECAA26500DB3EE7 /* Coordinator.swift */,
 				9F6E07D61ED255D4004CF435 /* GameTimer.swift */,
 			);
-			name = Models;
+			name = Control;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
