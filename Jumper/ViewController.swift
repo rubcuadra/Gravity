@@ -39,6 +39,8 @@ class ViewController: NSViewController
     {
         super.viewDidLoad()
         
+        GameTimer.instance.subscribe(delegate: self)
+        
         NotificationCenter.default.addObserver(self, selector:
             #selector( gameOver ),name: gameOverNotification,object: nil)
         //self.view.wantsLayer = true
@@ -49,12 +51,19 @@ class ViewController: NSViewController
     
     override var representedObject: Any?
     {
-            didSet
-            {
-                // Update the view, if already loaded.
-            }
+        didSet
+        {
+            // Update the view, if already loaded.
+        }
     }
+}
 
-
+extension ViewController: GameTimerProtocol
+{
+    //MARK: GAME TIME PROTOCOL
+    func currentTime(_ timer: GameTimer, cTime: TimeInterval)
+    {
+        
+    }
 }
 

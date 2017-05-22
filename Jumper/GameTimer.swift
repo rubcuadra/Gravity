@@ -88,7 +88,6 @@ class GameTimer
     func unsuscribe(delegate: GameTimerProtocol)
     {
         subscribers = subscribers.filter() { $0 !== delegate }
-        print(subscribers.count)
     }
     
     func subscribe(delegate: GameTimerProtocol )
