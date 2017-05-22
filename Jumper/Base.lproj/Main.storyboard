@@ -705,15 +705,26 @@
                                     <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                                 </textFieldCell>
                             </textField>
+                            <textField horizontalHuggingPriority="251" verticalHuggingPriority="750" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XfJ-Il-wBK">
+                                <rect key="frame" x="193" y="147" width="48" height="17"/>
+                                <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" title="SCORE" id="Aia-MQ-Xms">
+                                    <font key="font" metaFont="system"/>
+                                    <color key="textColor" name="labelColor" catalog="System" colorSpace="catalog"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                </textFieldCell>
+                            </textField>
                         </subviews>
                         <constraints>
+                            <constraint firstItem="Kwl-k0-HOz" firstAttribute="top" secondItem="XfJ-Il-wBK" secondAttribute="bottom" constant="12" id="13m-OU-gzd"/>
                             <constraint firstItem="Kwl-k0-HOz" firstAttribute="centerY" secondItem="m2S-Jp-Qdl" secondAttribute="centerY" id="19x-zY-c9F"/>
                             <constraint firstItem="Kwl-k0-HOz" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="EPm-Ho-uvq"/>
+                            <constraint firstItem="XfJ-Il-wBK" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="Hsv-gK-2Dd"/>
                             <constraint firstItem="sXV-dG-k7E" firstAttribute="top" secondItem="Kwl-k0-HOz" secondAttribute="bottom" constant="8" id="aIy-qW-8jm"/>
                             <constraint firstItem="sXV-dG-k7E" firstAttribute="centerX" secondItem="m2S-Jp-Qdl" secondAttribute="centerX" id="gmS-1e-yfo"/>
                         </constraints>
                     </view>
                     <connections>
+                        <outlet property="scoreLabel" destination="XfJ-Il-wBK" id="D1L-oj-wN7"/>
                         <outlet property="togglePlayButton" destination="Kwl-k0-HOz" id="gIp-Of-HL3"/>
                     </connections>
                 </viewController>

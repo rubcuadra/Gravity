@@ -12,6 +12,8 @@ class ViewController: NSViewController
 {
     var restart = false
     
+    
+    @IBOutlet weak var scoreLabel: NSTextField!
     @IBOutlet weak var togglePlayButton: NSButton!
     
     @IBAction func startClick(_ sender: NSButton)
@@ -63,7 +65,12 @@ extension ViewController: GameTimerProtocol
     //MARK: GAME TIME PROTOCOL
     func currentTime(_ timer: GameTimer, cTime: TimeInterval)
     {
+        let mins = floor(cTime / 60)
+        let secs = cTime - (mins * 60)
+
+        let secondsDisplay = String(format: "%02d", Int(secs))
         
+        scoreLabel.stringValue = "\(Int(mins)):\(secondsDisplay)"
     }
 }
 
