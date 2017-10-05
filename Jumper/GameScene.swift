@@ -145,8 +145,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         var PlayerD: SKSpriteNode!
         let DeathAtlas = SKTextureAtlas(named: "PlayerD")
         var deathFrames = [SKTexture]()
-        
-        for index in 1...20
+        let totalFrames = 20
+        for index in 1...totalFrames
         {
             let textureName = "PlayerD\(index)"
             deathFrames.append(DeathAtlas.textureNamed(textureName))
@@ -162,7 +162,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         self.Player.removeFromParent()
         self.addChild(PlayerD)
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0)
         {
             self.view?.scene?.isPaused = false
             do
@@ -174,16 +174,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             }
             //self.miscAudio.prepareToPlay()
             //self.miscAudio.play()
-            for i in 1...11
+            for i in 1...totalFrames
             {
-                if i == 1
-                {
-                    PlayerD.position.y -= 1 //to account for differences in sprite dimensions
-                }
-                if i == 11
-                {
-                    PlayerD.position.y += 1
-                }
+//                if i == 1
+//                {
+//                    PlayerD.position.y -= 1 //to account for differences in sprite dimensions
+//                }
+//                if i == 11
+//                {
+//                    PlayerD.position.y += 1
+//                }
                 PlayerD.run(SKAction.animate(with: deathFrames, timePerFrame: 0.1, resize: false, restore: true), withKey: "GameOver")
             }
             
