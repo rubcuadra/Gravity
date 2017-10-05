@@ -14,7 +14,7 @@ struct gamePhysics
 {
     static let Player: UInt32 = 1
     static let Void: UInt32 = 2
-    //static let Blinky: UInt32 = 3
+    static let Platform: UInt32 = 3
 }
 
 //TODO : ANIMAR EL SALTO
@@ -69,6 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         for mask in conTestBitMask { node.physicsBody?.contactTestBitMask = mask }
         node.physicsBody?.isDynamic = true
         node.physicsBody?.affectedByGravity = false
+        f.physicsBody?.allowsRotation = false
         self.addChild(node)
     }
     
@@ -288,6 +289,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         f.yScale = 1
         f.position.y = ylow_bars
         f.name = name
+        
+        //Agregar fisica para colisiones
+//        f.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 5,height:5))
+//        f.physicsBody?.categoryBitMask = gamePhysics.Platform
+//        f.physicsBody?.isDynamic = false
+        
         f.position.x = xPosition
         floorBarArray.append( f )
         self.addChild(f)
@@ -300,6 +307,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         c.yScale = 1
         c.position.y = ytop_bars
         c.name = name
+        
+        //Agregar fisica para colisiones
+//        c.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: c.size.width/2,height: c.size.height/2))
+//        c.physicsBody?.categoryBitMask = gamePhysics.Platform
+//        c.physicsBody?.isDynamic = false
+        
         c.position.x = xPosition
         ceilBarArray.append( c )
         self.addChild(c)
