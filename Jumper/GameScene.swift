@@ -31,6 +31,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var barWidth : CGFloat  = 0             //Se llenan en el init de borders
     var voidWidth : CGFloat = 0             //Se llenan en el init de borders
     var voidBounding : CGSize = CGSize()    //Bounding Box para fisica
+    var platformBounding : CGSize = CGSize()    //Bounding Box para fisica
     
     let xstart_pos = CGFloat(50)       //Distancia en X donde esta el player
     let player_floor_pos = CGFloat(10) //Posicion 'Suelo' del Player
@@ -190,8 +191,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         let firstBody: SKPhysicsBody = contact.bodyA
         let secondBody: SKPhysicsBody = contact.bodyB
-        
-        if (firstBody.categoryBitMask == gamePhysics.Player) && (secondBody.categoryBitMask == gamePhysics.Void)
+        if firstBody.categoryBitMask == gamePhysics.Platform || secondBody.categoryBitMask == gamePhysics.Platform {return}
+
+        if (firstBody.categoryBitMask  == gamePhysics.Player) && (secondBody.categoryBitMask == gamePhysics.Void) ||
+           (secondBody.categoryBitMask == gamePhysics.Player) && (firstBody.categoryBitMask == gamePhysics.Void)
         {
             print("CHOCARON")
             
@@ -268,54 +271,49 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         var offsetX = 0  //Separar barras
         
-        barWidth = SKSpriteNode(imageNamed: platform_file_name ).size.width  //Guardar size de las barras
+        platformBounding = SKSpriteNode(imageNamed: platform_file_name ).size
+        barWidth = platformBounding.width  //Guardar size de las barras
+        
         voidBounding = SKSpriteNode(imageNamed: void_file_name ).size
         voidWidth = voidBounding.width                                       //Size de los voids
         voidBounding.width /= 4                                              //La cuarta parte del tamaño original
         
         for index in 1...touchbarWidth/Int(barWidth) //Llenar top y bottom de bars
         {
-            addNewFloor(name: "BarF" + "\(index)", xPosition:CGFloat(offsetX))
-            addNewCeil (name: "BarC" + "\(index)", xPosition:CGFloat(offsetX))
+            addNewPlatform( name: "BarF" + "\(index)", xPosition:CGFloat(offsetX), floor: true)
+            addNewPlatform( name: "BarC" + "\(index)", xPosition:CGFloat(offsetX), floor: false)
             offsetX += Int(barWidth)
         }
-        
     }
     
-    private func addNewFloor(name: String,xPosition : CGFloat)
+    private func addNewPlatform(name:String ,xPosition: CGFloat, floor: Bool)
     {
         let f = SKSpriteNode(imageNamed: platform_file_name )
         f.xScale = 1
         f.yScale = 1
-        f.position.y = ylow_bars
+        f.position.x = xPosition
         f.name = name
         
-        //Agregar fisica para colisiones
-//        f.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: 5,height:5))
-//        f.physicsBody?.categoryBitMask = gamePhysics.Platform
-//        f.physicsBody?.isDynamic = false
         
-        f.position.x = xPosition
-        floorBarArray.append( f )
+        //Agregar fisica para colisiones
+        f.physicsBody = SKPhysicsBody(rectangleOf: platformBounding)
+        f.physicsBody?.categoryBitMask = gamePhysics.Platform
+        f.physicsBody?.contactTestBitMask = gamePhysics.Player
+        f.physicsBody?.isDynamic = true
+        f.physicsBody?.affectedByGravity = false
+        f.physicsBody?.collisionBitMask = 0
+        
+        if floor
+        {
+            f.position.y = ylow_bars
+            floorBarArray.append( f )
+        }
+        else
+        {
+            f.position.y = ytop_bars
+            ceilBarArray.append( f )
+        }
         self.addChild(f)
-    }
-    
-    private func addNewCeil(name: String,xPosition : CGFloat)
-    {
-        let c = SKSpriteNode(imageNamed: platform_file_name )
-        c.xScale = 1
-        c.yScale = 1
-        c.position.y = ytop_bars
-        c.name = name
-        
-        //Agregar fisica para colisiones
-//        c.physicsBody = SKPhysicsBody(rectangleOf: CGSize(width: c.size.width/2,height: c.size.height/2))
-//        c.physicsBody?.categoryBitMask = gamePhysics.Platform
-//        c.physicsBody?.isDynamic = false
-        
-        c.position.x = xPosition
-        ceilBarArray.append( c )
-        self.addChild(c)
     }
     
     private func addNewVoid(name: String,xPosition : CGFloat, floor :Bool)
@@ -365,7 +363,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 }
                 else
                 {
-                    addNewCeil(name: first.name!,  xPosition: last.position.x + last.size.width )
+                    addNewPlatform( name: first.name!, xPosition:last.position.x+last.size.width, floor: false)
                 }
             }
             else
@@ -392,7 +390,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                 }
                 else
                 {
-                    addNewFloor(name: first.name!,  xPosition: last.position.x + last.size.width )
+                    addNewPlatform( name: first.name!, xPosition:last.position.x+last.size.width, floor: true)
                 }
             }
             else
