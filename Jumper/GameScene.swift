@@ -17,8 +17,12 @@ struct gamePhysics
     static let Platform: UInt32 = 3
 }
 
-//TODO : ANIMAR EL SALTO
-//TODO : DEFINIR SPRITES
+struct playerAnimations
+{
+    static let RUN: String = "PlayerRun"
+    static let JUMP: String = "PlayerJump"
+}
+
 //TODO : MUSICA
 
 class GameScene: SKScene, SKPhysicsContactDelegate
@@ -48,6 +52,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     //Players Sprites
     var Player: SKSpriteNode!
     var PlayerFrames: [SKTexture]!
+    var PlayerJumpFrames: [SKTexture]!
+    let playerFrames = 12
+    let jumpFrames = 4
     
     //Game Flags/Logic
     var coord = Coordinator.instance
@@ -194,7 +201,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         if firstBody.categoryBitMask != gamePhysics.Player && secondBody.categoryBitMask != gamePhysics.Player
         {
-            print("\(firstBody.categoryBitMask) \(secondBody.categoryBitMask)")
             return //Colisiones que no involucran jugador (void-platform,platform-platform)
         }
         
@@ -219,9 +225,21 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         let PlayerAtlas = SKTextureAtlas(named: "Player")
         var moveFrames = [SKTexture]()
-        for index in 1...12 //Player Sprites
+        for index in 1...playerFrames //Player Sprites
         {
             let textureName = "Player\(index)"
+            moveFrames.append(PlayerAtlas.textureNamed(textureName))
+        }
+        return moveFrames
+    }
+    
+    private func getPlayerJumpFrames() -> [SKTexture]
+    {
+        let PlayerAtlas = SKTextureAtlas(named: "PlayerJ")
+        var moveFrames = [SKTexture]()
+        for index in 1...jumpFrames //Player Sprites
+        {
+            let textureName = "M\(index)"
             moveFrames.append(PlayerAtlas.textureNamed(textureName))
         }
         return moveFrames
@@ -254,10 +272,19 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         initializeBorders()
         coord.start()
+        
         PlayerFrames = getPlayerFrames()
+        PlayerJumpFrames = getPlayerJumpFrames()
+        
         createPlayer(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player,    catBitMask: gamePhysics.Player, conTestBitMask:[gamePhysics.Void])
         Player.texture = PlayerFrames[2]
-        self.Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "PlayerRun")
+        
+        startRunninAnimation()
+    }
+    
+    func startRunninAnimation()
+    {
+        Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: playerAnimations.RUN )
     }
     
     //Initialise the game
@@ -266,7 +293,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         super.didMove(to: view)
         self.view?.scene?.isPaused = true //Se inicializa pero en Pausa
         physicsWorld.contactDelegate = self
-        physicsWorld.gravity = CGVector(dx:0.0,dy:-3) //Cambiar esto
+        physicsWorld.gravity = CGVector(dx:0.0,dy:-5) //Cambiar esto
         gameTimer.subscribe(delegate: self)
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
@@ -411,24 +438,27 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         //SOLO SI NO ESTA PAUSADA LA SCENE o NO PUEDE CAMBIARLA
         if (self.view?.scene?.isPaused)! || !canSwitchGravity {return}
-
-        physicsWorld.gravity = CGVector(dx: 0, dy: -physicsWorld.gravity.dy)
         
-        if physicsWorld.gravity.dy <= 0 //Gravedad normal
-        {
-            if Player.yScale < 0 //Esta de cabeza
+        //Animar salto
+        Player.run(SKAction.animate(with: self.PlayerJumpFrames, timePerFrame: 0.016, resize: false, restore: true),completion: {
+            //Esto se ejecuta cuando acaba de animarse el salto
+            self.physicsWorld.gravity = CGVector(dx: 0, dy: -self.physicsWorld.gravity.dy)
+            if self.physicsWorld.gravity.dy <= 0 //Gravedad normal
             {
-                Player.yScale *= -1                  //Poner de pie
+                if self.Player.yScale < 0 //Esta de cabeza
+                {
+                    self.Player.yScale *= -1      //Poner de pie
+                }
             }
-        }
-        else    //Gravedad Invertida
-        {
-            if Player.yScale > 0 //Esta de pie
+            else    //Gravedad Invertida
             {
-                Player.yScale *= -1 //Voltear de cabeza
+                if self.Player.yScale > 0 //Esta de pie
+                {
+                    self.Player.yScale *= -1 //Voltear de cabeza
+                }
             }
-        }
-        canSwitchGravity = false
+            self.canSwitchGravity = false
+        })
     }
     
     private func moveScene()
