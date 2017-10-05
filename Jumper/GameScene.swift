@@ -158,11 +158,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         PlayerD.position.y = 15 //Prueba, que muera en el centro?
         
         Player.removeAction(forKey: "PlayerRun")
-        Player.texture = SKTexture(imageNamed: "Player3")
         self.Player.removeFromParent()
         self.addChild(PlayerD)
         
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0)
         {
             self.view?.scene?.isPaused = false
             do
@@ -176,15 +175,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             //self.miscAudio.play()
             for i in 1...totalFrames
             {
-//                if i == 1
-//                {
-//                    PlayerD.position.y -= 1 //to account for differences in sprite dimensions
-//                }
-//                if i == 11
-//                {
-//                    PlayerD.position.y += 1
-//                }
-                PlayerD.run(SKAction.animate(with: deathFrames, timePerFrame: 0.1, resize: false, restore: true), withKey: "GameOver")
+                PlayerD.run(SKAction.animate(with: deathFrames, timePerFrame: 0.05, resize: false, restore: true), withKey: "GameOver")
             }
             
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.3)
@@ -206,7 +197,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             topRemoval += removedPerCrash //11 choques empiezan a reducir la barra
             lowRemoval += removedPerCrash
             
-            if(ceilBarArray.count < 6)
+            if(ceilBarArray.count < 7)
             {
                 GameOver()
             }
