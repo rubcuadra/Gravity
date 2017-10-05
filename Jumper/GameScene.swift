@@ -69,7 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         for mask in conTestBitMask { node.physicsBody?.contactTestBitMask = mask }
         node.physicsBody?.isDynamic = true
         node.physicsBody?.affectedByGravity = false
-        f.physicsBody?.allowsRotation = false
+        node.physicsBody?.allowsRotation = false
         self.addChild(node)
     }
     
