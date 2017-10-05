@@ -57,7 +57,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     var barIsWhite: Bool = false //Flash
     
-    private func createSprite(texture: [SKTexture], height: Int, width: Int, xPos: Int, yPos: Int, node: inout SKSpriteNode!, catBitMask: UInt32, conTestBitMask: [UInt32])
+    private func createPlayer(texture: [SKTexture], height: Int, width: Int, xPos: Int, yPos: Int, node: inout SKSpriteNode!, catBitMask: UInt32, conTestBitMask: [UInt32])
     {
         node = SKSpriteNode(texture: texture[0])
         node.size.height = CGFloat(height)
@@ -244,8 +244,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         initializeBorders()
         coord.start()
-        createSprite(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player, catBitMask: gamePhysics.Player,
-                     conTestBitMask:[gamePhysics.Void])
+        PlayerFrames = getPlayerFrames()
+        createPlayer(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player,    catBitMask: gamePhysics.Player, conTestBitMask:[gamePhysics.Void])
         Player.texture = PlayerFrames[2]
         self.Player.run(SKAction.repeatForever(SKAction.animate(with: self.PlayerFrames, timePerFrame: 0.05, resize: false, restore: true)), withKey: "PlayerRun")
     }
@@ -254,13 +254,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     override func didMove(to view: SKView)
     {
         super.didMove(to: view)
-        
         self.view?.scene?.isPaused = true //Se inicializa pero en Pausa
         physicsWorld.contactDelegate = self
+        physicsWorld.gravity = CGVector(dx:0.0,dy:-0.98) //Cambiar esto
         gameTimer.subscribe(delegate: self)
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
-        PlayerFrames = getPlayerFrames()
         resetGame()
     }
     
