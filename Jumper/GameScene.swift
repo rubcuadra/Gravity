@@ -146,7 +146,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         let DeathAtlas = SKTextureAtlas(named: "PlayerD")
         var deathFrames = [SKTexture]()
         
-        for index in 1...11
+        for index in 1...20
         {
             let textureName = "PlayerD\(index)"
             deathFrames.append(DeathAtlas.textureNamed(textureName))
@@ -206,7 +206,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             topRemoval += removedPerCrash //11 choques empiezan a reducir la barra
             lowRemoval += removedPerCrash
             
-            if(ceilBarArray.count < 8)
+            if(ceilBarArray.count < 6)
             {
                 GameOver()
             }
@@ -218,7 +218,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         let PlayerAtlas = SKTextureAtlas(named: "Player")
         var moveFrames = [SKTexture]()
-        for index in 1...3
+        for index in 1...12 //Player Sprites
         {
             let textureName = "Player\(index)"
             moveFrames.append(PlayerAtlas.textureNamed(textureName))
