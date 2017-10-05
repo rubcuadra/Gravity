@@ -54,7 +54,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     let removedPerCrash = 4 //Se suma al top/low removal para quitar X celdas cada choque
     var topRemoval = 0      //Cuantas celdas se deben remover arriba
     var lowRemoval = 0      //Cuantas celdas se deben remover abajo
-    var gravity = true
+    var canSwitchGravity = true
     
     var barIsWhite: Bool = false //Flash
     
@@ -69,7 +69,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         node.physicsBody?.categoryBitMask = catBitMask
         for mask in conTestBitMask { node.physicsBody?.contactTestBitMask = mask }
         node.physicsBody?.isDynamic = true
-        node.physicsBody?.affectedByGravity = false
+        node.physicsBody?.affectedByGravity = true
         node.physicsBody?.allowsRotation = false
         self.addChild(node)
     }
@@ -191,8 +191,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         let firstBody: SKPhysicsBody = contact.bodyA
         let secondBody: SKPhysicsBody = contact.bodyB
-        if firstBody.categoryBitMask == gamePhysics.Platform || secondBody.categoryBitMask == gamePhysics.Platform {return}
-
+        
+        if firstBody.categoryBitMask != gamePhysics.Player && secondBody.categoryBitMask != gamePhysics.Player
+        {
+            print("\(firstBody.categoryBitMask) \(secondBody.categoryBitMask)")
+            return //Colisiones que no involucran jugador (void-platform,platform-platform)
+        }
+        
+        canSwitchGravity = true
         if (firstBody.categoryBitMask  == gamePhysics.Player) && (secondBody.categoryBitMask == gamePhysics.Void) ||
            (secondBody.categoryBitMask == gamePhysics.Player) && (firstBody.categoryBitMask == gamePhysics.Void)
         {
@@ -260,7 +266,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         super.didMove(to: view)
         self.view?.scene?.isPaused = true //Se inicializa pero en Pausa
         physicsWorld.contactDelegate = self
-        physicsWorld.gravity = CGVector(dx:0.0,dy:-0.98) //Cambiar esto
+        physicsWorld.gravity = CGVector(dx:0.0,dy:-3) //Cambiar esto
         gameTimer.subscribe(delegate: self)
         self.scaleMode = .resizeFill
         self.backgroundColor = .black
@@ -403,16 +409,16 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     
     public func switchGravity()
     {
-        //SOLO SI NO ESTA PAUSADA LA SCENE
-        if (self.view?.scene?.isPaused)!{return}
+        //SOLO SI NO ESTA PAUSADA LA SCENE o NO PUEDE CAMBIARLA
+        if (self.view?.scene?.isPaused)! || !canSwitchGravity {return}
+
+        physicsWorld.gravity = CGVector(dx: 0, dy: -physicsWorld.gravity.dy)
         
-        gravity = !gravity
-        if gravity //Gravedad normal
+        if physicsWorld.gravity.dy <= 0 //Gravedad normal
         {
             if Player.yScale < 0 //Esta de cabeza
             {
-                Player.yScale *= -1              //Poner de pie
-                Player.position.y = player_floor_pos //Pegar al suelo
+                Player.yScale *= -1                  //Poner de pie
             }
         }
         else    //Gravedad Invertida
@@ -420,9 +426,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate
             if Player.yScale > 0 //Esta de pie
             {
                 Player.yScale *= -1 //Voltear de cabeza
-                Player.position.y = player_ceil_pos //Pegar al techo
             }
         }
+        canSwitchGravity = false
     }
     
     private func moveScene()
