@@ -53,8 +53,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     var Player: SKSpriteNode!
     var PlayerFrames: [SKTexture]!
     var PlayerJumpFrames: [SKTexture]!
+    var PlayerFallFrames: [SKTexture]!
     let playerFrames = 12
-    let jumpFrames = 4
+    let jumpFrames = 5
+    let fallFrames = 6
     
     //Game Flags/Logic
     var coord = Coordinator.instance
@@ -208,11 +210,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if (firstBody.categoryBitMask  == gamePhysics.Player) && (secondBody.categoryBitMask == gamePhysics.Void) ||
            (secondBody.categoryBitMask == gamePhysics.Player) && (firstBody.categoryBitMask == gamePhysics.Void)
         {
-            print("CHOCARON")
-            
             topRemoval += removedPerCrash //11 choques empiezan a reducir la barra
             lowRemoval += removedPerCrash
             
+            print("CHOCARON Restan \(ceilBarArray.count)")
             if(ceilBarArray.count < 7)
             {
                 GameOver()
@@ -232,12 +233,22 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         }
         return moveFrames
     }
-    
+    private func getPlayerFallFrames() -> [SKTexture]
+    {
+        let PlayerAtlas = SKTextureAtlas(named: "PlayerF")
+        var moveFrames = [SKTexture]()
+        for index in 1...fallFrames //Player Sprites
+        {
+        let textureName = "M\(index)"
+        moveFrames.append(PlayerAtlas.textureNamed(textureName))
+        }
+        return moveFrames
+    }
     private func getPlayerJumpFrames() -> [SKTexture]
     {
-        let PlayerAtlas = SKTextureAtlas(named: "PlayerJ")
+        let PlayerAtlas = SKTextureAtlas(named: "PlayerF")
         var moveFrames = [SKTexture]()
-        for index in 1...jumpFrames //Player Sprites
+        for index in fallFrames...fallFrames+jumpFrames //Player Sprites
         {
             let textureName = "M\(index)"
             moveFrames.append(PlayerAtlas.textureNamed(textureName))
@@ -275,6 +286,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         
         PlayerFrames = getPlayerFrames()
         PlayerJumpFrames = getPlayerJumpFrames()
+        PlayerFallFrames = getPlayerFallFrames()
         
         createPlayer(texture: PlayerFrames, height: 13, width: 13, xPos: Int(xstart_pos), yPos: Int(player_floor_pos), node: &Player,    catBitMask: gamePhysics.Player, conTestBitMask:[gamePhysics.Void])
         Player.texture = PlayerFrames[2]
@@ -440,9 +452,12 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         if (self.view?.scene?.isPaused)! || !canSwitchGravity {return}
         
         //Animar salto
-        Player.run(SKAction.animate(with: self.PlayerJumpFrames, timePerFrame: 0.016, resize: false, restore: true),completion: {
+        canSwitchGravity = false
+        self.physicsWorld.gravity = CGVector(dx: 0, dy: -self.physicsWorld.gravity.dy) //Cambiar gravedad
+        
+        Player.run(SKAction.animate(with: self.PlayerJumpFrames, timePerFrame: 0.05, resize: false, restore: true),completion: {
             //Esto se ejecuta cuando acaba de animarse el salto
-            self.physicsWorld.gravity = CGVector(dx: 0, dy: -self.physicsWorld.gravity.dy)
+            //Invertir objeto
             if self.physicsWorld.gravity.dy <= 0 //Gravedad normal
             {
                 if self.Player.yScale < 0 //Esta de cabeza
@@ -457,7 +472,6 @@ class GameScene: SKScene, SKPhysicsContactDelegate
                     self.Player.yScale *= -1 //Voltear de cabeza
                 }
             }
-            self.canSwitchGravity = false
         })
     }
     
