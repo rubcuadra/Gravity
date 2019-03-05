@@ -496,46 +496,46 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     {
         moveScene()
         
-        if false  //GANAMOS
-        {
-            self.view?.scene?.isPaused = true
-            //sirenAudio.stop()
-            Player.texture = SKTexture(imageNamed: "Player3")
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3)
-            {
-                //self.Blinky.removeFromParent()
-                for i in 1...8
-                {
-                    self.flashAfterDelay(delay: Double(i) * 0.2)
-                }
-                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0)
-                {
-                    self.Player.removeFromParent()
-                    self.removeBars()
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1)
-                    {
-                        self.addChild(self.Player)
-                        
-                        
-                        self.Player.position.x = self.xstart_pos
-                        self.Player.position.y = self.player_floor_pos
-                        
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) //Start Game
-                        {
-                            
-                            self.view?.scene?.isPaused = false
-                            do
-                            {
-                                //self.sirenAudio = try AVAudioPlayer(contentsOf: self.sirenS as URL)
-                            } catch
-                            {
-                                print("Could not update audio - sirenS")
-                            }
-                        }
-                    }
-                }
-            }
-        }
+//        if false  //GANAMOS
+//        {
+//            self.view?.scene?.isPaused = true
+//            //sirenAudio.stop()
+//            Player.texture = SKTexture(imageNamed: "Player3")
+//            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.3)
+//            {
+//                //self.Blinky.removeFromParent()
+//                for i in 1...8
+//                {
+//                    self.flashAfterDelay(delay: Double(i) * 0.2)
+//                }
+//                DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 2.0)
+//                {
+//                    self.Player.removeFromParent()
+//                    self.removeBars()
+//                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1)
+//                    {
+//                        self.addChild(self.Player)
+//
+//
+//                        self.Player.position.x = self.xstart_pos
+//                        self.Player.position.y = self.player_floor_pos
+//
+//                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) //Start Game
+//                        {
+//
+//                            self.view?.scene?.isPaused = false
+//                            do
+//                            {
+//                                //self.sirenAudio = try AVAudioPlayer(contentsOf: self.sirenS as URL)
+//                            } catch
+//                            {
+//                                print("Could not update audio - sirenS")
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
     }
 }
 

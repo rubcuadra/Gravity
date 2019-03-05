@@ -31,7 +31,7 @@ class ViewController: NSViewController
             togglePlayButton.title = gameScene.isPaused ? "CONTINUE" : "PAUSE"
         }
     }
-    func gameOver()
+    @objc func gameOver()
     {
         togglePlayButton.title = "RESTART"
         restart = true

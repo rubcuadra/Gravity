@@ -94,7 +94,7 @@ class GameTimer
         subscribers.append(delegate)
     }
     
-    dynamic func timerAction()
+    @objc dynamic func timerAction()
     {
         //startTime Optional Date, if nil, the timer cannot be running
         guard let startTime = startTime else

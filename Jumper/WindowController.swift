@@ -10,14 +10,14 @@ import Foundation
 import GameplayKit
 import AVFoundation
 
-fileprivate extension NSTouchBarCustomizationIdentifier
+fileprivate extension NSTouchBar.CustomizationIdentifier
 {
-    static let customTouchBar = NSTouchBarCustomizationIdentifier("com.RubCuadra.touchbar.customTouchBar")
+    static let customTouchBar = "com.RubCuadra.touchbar.customTouchBar"
 }
 
-fileprivate extension NSTouchBarItemIdentifier
+fileprivate extension NSTouchBarItem.Identifier
 {
-    static let customView = NSTouchBarItemIdentifier("com.RubCuadra.touchbar.items.customView")
+    static let customView = NSTouchBarItem.Identifier("com.RubCuadra.touchbar.items.customView")
 }
 
 class WindowController: NSWindowController
@@ -57,16 +57,16 @@ class WindowController: NSWindowController
 @available(OSX 10.12.2, *)
 extension WindowController: NSTouchBarDelegate
 {
-    func touchBar(_ touchBar: NSTouchBar, makeItemForIdentifier identifier: NSTouchBarItemIdentifier) -> NSTouchBarItem?
+    func touchBar(_ touchBar: NSTouchBar, makeItemForIdentifier identifier: NSTouchBarItem.Identifier) -> NSTouchBarItem?
     {
         
         switch identifier
         {
-            case NSTouchBarItemIdentifier.customView:
+            case NSTouchBarItem.Identifier.customView:
                 let gameView = SKView()
                 let item = NSCustomTouchBarItem(identifier: identifier)
                 item.view = gameView
-                item.view.allowedTouchTypes = NSTouchTypeMask.direct
+                item.view.allowedTouchTypes = NSTouch.TouchTypeMask.direct
                 item.view.acceptsTouchEvents = true
                 //item.view.gestureRecognizers.append(NSGestureRecognizer.init())
                 gameView.presentScene(gameScene)
