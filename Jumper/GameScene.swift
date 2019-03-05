@@ -175,16 +175,18 @@ class GameScene: SKScene, SKPhysicsContactDelegate
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1.0)
         {
             self.view?.scene?.isPaused = false
-            do
-            {
-                //try self.miscAudio = AVAudioPlayer(contentsOf: self.death as URL)
-            } catch
-            {
-                print("Could not update audio - death")
-            }
+//            do
+//            {
+//
+//                try self.miscAudio = AVAudioPlayer(contentsOf: self.death as URL)
+//
+//            } catch
+//            {
+//                print("Could not update audio - death")
+//            }
             //self.miscAudio.prepareToPlay()
             //self.miscAudio.play()
-            for i in 1...totalFrames
+            for _ in 1...totalFrames
             {
                 PlayerD.run(SKAction.animate(with: deathFrames, timePerFrame: 0.05, resize: false, restore: true), withKey: "GameOver")
             }
@@ -364,7 +366,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate
     private func addNewVoid(name: String,xPosition : CGFloat, floor :Bool)
     {
         //Crear objeto
-        var _void = SKSpriteNode(imageNamed: void_file_name)
+        let _void = SKSpriteNode(imageNamed: void_file_name)
         _void.position.x = xPosition
         _void.name = name           //Maybe deberiamos identificarlo de otra forma
         
